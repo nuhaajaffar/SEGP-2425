@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>General</title>
+    <title>Manage User</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style.css">
     <style>
@@ -23,18 +23,6 @@
             margin: 0 15px;
         }
         .button {
-            background-color: #dd6563;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-            margin-left:0.5%;
-        }
-        .button:hover {
-            background: #ef9a9a;
-        }
-        .bttn {
             background-color: white;
             border: none;
             padding: 10px 20px;
@@ -43,8 +31,21 @@
             border-radius: 5px;
             margin-left:0.5%;
         }        
-        .bttn:hover {
+        .button:hover {
             background: #ddd;
+        }
+        .remove {
+            color: white;
+            background-color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            margin-left:0.5%;
+        }
+        .remove:hover {
+            background: grey;
         }
         .container {
             margin: 4rem auto;
@@ -96,45 +97,34 @@
         <h2 style="margin-top: 20px;">Welcome Back, SOPHIEA!</h2>
         <br>
         <button class="button">ACTIVITY</button>
-        <bttn class="bttn">APPOINTMENTS</bttn>
-        <bttn class="bttn">ADD PATIENT RECORD</bttn>
+        <button class="button">APPOINTMENTS</button>
+        <button class="button">ADD PATIENT RECORD</button>
         <br>
         <table>
             <thead>
                 <tr>
-                    <th>HOSPITAL ID</th>
-                    <th>HOSPITAL</th>
-                    <th>NUMBER OF USERS</th>
-                    <th>DOCTORS</th>
-                    <th>RADIOLOGIST</th>
-                    <th>RADIOGRAPHER</th>
-                    <th>PATIENT</th>
-                    <th>DATE ADDED</th>
-                    <th>STATUS</th>
+                    <th>NO</th>
+                    <th>USER ID</th>
+                    <th>NAME</th>
+                    <th>ROLE</th>
+                    <th>DATE JOINED</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>20345683</td>
-                    <td>KPJ</td>
-                    <td>--</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td>2</td>
-                    <td>14</td>
-                    <td>17/11/2024</td>
-                    <td>PENDING</td>
-                </tr>
-                <tr>
-                    <td>20346584</td>
-                    <td>GLENEAGLES</td>
-                    <td>--</td>
-                    <td>12</td>
                     <td>1</td>
+                    <td>20345683</td>
+                    <td>DAVID</td>
+                    <td>DOCTOR</td>
+                    <td>17/11/2024</td>
+                    <td><button class="remove">REMOVE</button></td>                </tr>
+                <tr>
                     <td>2</td>
-                    <td>10</td>
+                    <td>20346584</td>
+                    <td>RAJU</td>
+                    <td>RADIOLOGIST</td>
                     <td>16/11/2024</td>
-                    <td>PENDING</td>
+                    <td><button class="remove">REMOVE</button></td>
                 </tr>
             </tbody>
         </table>

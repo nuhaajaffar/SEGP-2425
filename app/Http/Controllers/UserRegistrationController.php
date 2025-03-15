@@ -29,8 +29,9 @@ class UserRegistrationController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Auto-generate a unique 6-digit hospital ID
-        $hospitalId = rand(100000, 999999);
+        // Auto-generate a unique hospital ID (at least 4 digits)
+        $randomNumber = rand(1, 9999);
+        $hospitalId = str_pad($randomNumber, 4, '0', STR_PAD_LEFT);
 
         HospitalUser::create([
             'name'        => $request->name,
@@ -41,6 +42,8 @@ class UserRegistrationController extends Controller
             'contact'     => $request->contact,
             'username'    => $request->username,
             'password'    => Hash::make($request->password),
+            'dob'         => $request->dob,  
+            'sex'         => $request->sex,  
         ]);
 
         return redirect()->back()->with('success', 'User registration successful.');

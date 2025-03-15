@@ -41,5 +41,4 @@ class ImageController extends Controller
         $images = Image::all();
         return view('images', compact('images'));
     }
-    
 }

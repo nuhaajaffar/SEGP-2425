@@ -18,5 +18,19 @@ class HospitalUser extends Model
         'contact',
         'username',
         'password',
+        'dob',
+        'sex',
     ];
+
+    // Relationship: one HospitalUser has one PatientImage
+    public function images()
+    {
+        return $this->hasMany(\App\Models\PatientImage::class, 'hospital_user_id', 'id');
+    }
+
+    public function report()
+    {
+        // A patient can have one report (use hasOne, or hasMany if needed)
+        return $this->hasOne(\App\Models\PatientReport::class);
+    }
 }

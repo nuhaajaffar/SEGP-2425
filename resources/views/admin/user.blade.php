@@ -38,7 +38,27 @@
             @enderror
         </div>
 
-        <!-- Hospital ID is auto-generated so no field is needed -->
+        <!-- DOB -->
+        <div class="mb-3">
+            <label for="dob" class="form-label">Date of Birth</label>
+            <input type="date" name="dob" id="dob" class="form-control" value="{{ old('dob') }}" required>
+            @error('dob')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
+
+        <!-- Sex -->
+        <div class="mb-3">
+            <label for="sex" class="form-label">Sex</label>
+            <select name="sex" id="sex" class="form-select" required>
+                <option value="">Select Sex</option>
+                <option value="male" {{ old('sex') == 'male' ? 'selected' : '' }}>Male</option>
+                <option value="female" {{ old('sex') == 'female' ? 'selected' : '' }}>Female</option>
+            </select>
+            @error('sex')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
 
         <!-- Role -->
         <div class="mb-3">

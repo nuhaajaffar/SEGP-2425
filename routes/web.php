@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\RadiologistDashboardController;
+use App\Http\Controllers\RadiographerActivityController;
+use App\Http\Controllers\RadiographerPatientController;
+use App\Http\Controllers\PatientHistoryController;
+use App\Http\Controllers\ManagementController;
+
+
 
 
 // Fallback Home Route
@@ -21,6 +29,39 @@ Route::get('upload', [ImageController::class, 'index'])->name('upload.index');
 Route::post('/upload', [ImageController::class, 'store'])->name('upload.store');
 
 Route::get('/images', [ImageController::class, 'showImages'])->name('images.show');
+
+// Route to show the scan upload form for a patient
+Route::get('/patient/{patient}/upload-scan', [PatientController::class, 'uploadScanForm'])
+     ->name('radiologist.upload-scan');
+
+// Route to process the scan upload
+Route::post('/patient/{patient}/upload-scan', [PatientController::class, 'uploadScanStore'])
+     ->name('radiologist.upload.store');
+
+
+     
+// Radiographer: Upload Report for a specific patient
+Route::get('/radiographer/patient/{patient}/upload-report', [PatientController::class, 'uploadReportForm'])
+     ->name('radiographer.report');
+
+// Radiographer: Process the report upload
+Route::post('/radiographer/patient/{patient}/upload-report', [PatientController::class, 'uploadReportStore'])
+     ->name('radiographer.upload.report.store');
+
+// Optionally, a route to view patient details (if needed)
+Route::get('/patient/{patient}/view', [PatientController::class, 'view'])
+     ->name('patient.view');
+
+//RADIOLOGIST-patient
+Route::get('/radiographer/patient', [RadiographerPatientController::class, 'index'])
+     ->name('radiographer.patient.search');
+
+Route::get('/patient/history/{id}', [PatientHistoryController::class, 'show'])
+     ->name('patient.history');
+
+
+
+
 
 
 //Named Routes
@@ -75,6 +116,41 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])
 Route::post('/login', [LoginController::class, 'login'])
      ->name('login.process');
 
+
+
+// Appointment page
+Route::get('/management/appointment', function () {
+    return view('management.appointment');
+})->name('management.appointment');
+
+// Manage Patient page
+Route::get('/management/manage-patient', [ManagementController::class, 'managePatient'])
+     ->name('management.manage-patient');
+
+// Manage User page
+Route::get('/management/manage-user', function () {
+    return view('management.manage-user');
+})->name('management.manage-user');
+
+// Route for editing a patient profile
+Route::get('/management/profile/{id}', [ManagementController::class, 'editPatient'])
+     ->name('management.profile');
+
+// Route for updating a patient profile
+Route::put('/management/profile/{id}', [ManagementController::class, 'updatePatient'])
+     ->name('management.profile.update');
+
+
+Route::get('/admin/profile', function () {
+    return view('admin.profile');
+})->name('admin.profile');
+
+Route::get('/admin/profile', function () {
+    return view('admin.profile');
+})->name('admin.profile');
+
+
+
 // Apply the custom middleware to all dashboard routes
 Route::middleware(['auth.hospital'])->group(function () {
     Route::get('/admin/dashboard', function () {
@@ -85,13 +161,11 @@ Route::middleware(['auth.hospital'])->group(function () {
         return view('management.dashboard');
     })->name('management.dashboard');
 
-    Route::get('/radiographer/dashboard', function () {
-        return view('radiographer.dashboard');
-    })->name('radiographer.dashboard');
+    Route::get('/radiographer/dashboard', [RadiographerActivityController::class, 'index'])
+     ->name('radiographer.dashboard');
 
-    Route::get('/radiologist/dashboard', function () {
-        return view('radiologist.dashboard');
-    })->name('radiologist.dashboard');
+    Route::get('/radiologist/dashboard', [RadiologistDashboardController::class, 'index'])
+    ->name('radiologist.dashboard');
 
     Route::get('/doctor/dashboard', function () {
         return view('doctor.dashboard');
@@ -138,3 +212,4 @@ Route::get('/settings', function () {
 Route::get('/privacy', function () {
     return view('sidebar.privacy');
 })->name('privacy');
+
