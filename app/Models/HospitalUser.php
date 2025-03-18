@@ -33,4 +33,18 @@ class HospitalUser extends Model
         // A patient can have one report (use hasOne, or hasMany if needed)
         return $this->hasOne(\App\Models\PatientReport::class);
     }
+    public function assignedDoctor()
+    {
+        return $this->belongsTo(HospitalUser::class, 'assigned_doctor_id');
+    }
+    
+    public function assignedRadiologist()
+    {
+        return $this->belongsTo(HospitalUser::class, 'assigned_radiologist_id');
+    }
+    
+    public function assignedRadiographer()
+    {
+        return $this->belongsTo(HospitalUser::class, 'assigned_radiographer_id');
+    }
 }

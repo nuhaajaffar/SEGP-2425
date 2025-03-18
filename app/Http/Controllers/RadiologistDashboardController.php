@@ -9,9 +9,9 @@ class RadiologistDashboardController extends Controller
 {
     public function index()
     {
-        // Fetch all users with role "patient" where patient_image is null.
+        // Only retrieve patients that have the current radiologist assigned
         $patients = HospitalUser::where('role', 'patient')
-            ->whereNull('patient_image')
+            ->where('assigned_radiologist_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
 

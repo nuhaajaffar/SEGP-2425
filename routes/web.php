@@ -15,7 +15,8 @@ use App\Http\Controllers\RadiographerActivityController;
 use App\Http\Controllers\RadiographerPatientController;
 use App\Http\Controllers\PatientHistoryController;
 use App\Http\Controllers\ManagementController;
-
+use App\Http\Controllers\DoctorDashboardController;
+use App\Http\Controllers\AppointmentController;
 
 
 
@@ -60,7 +61,11 @@ Route::get('/patient/history/{id}', [PatientHistoryController::class, 'show'])
      ->name('patient.history');
 
 
-
+Route::get('/doctor/review/{patient}', [DoctorDashboardController::class, 'review'])
+     ->name('doctor.review');
+     
+Route::post('/doctor/upload-report/{patient}', [DoctorDashboardController::class, 'uploadReportStore'])
+     ->name('doctor.upload.report.store');
 
 
 
@@ -118,10 +123,14 @@ Route::post('/login', [LoginController::class, 'login'])
 
 
 
-// Appointment page
-Route::get('/management/appointment', function () {
-    return view('management.appointment');
-})->name('management.appointment');
+// Appointment booking page (for doctor booking)
+Route::get('/management/appointment/{patient}', [AppointmentController::class, 'create'])
+->name('management.appointment');
+
+Route::post('/management/appointment/{patient}', [AppointmentController::class, 'store'])
+->name('management.appointment.store');
+
+
 
 // Manage Patient page
 Route::get('/management/manage-patient', [ManagementController::class, 'managePatient'])
@@ -159,9 +168,8 @@ Route::middleware(['auth.hospital'])->group(function () {
     Route::get('/radiologist/dashboard', [RadiologistDashboardController::class, 'index'])
     ->name('radiologist.dashboard');
 
-    Route::get('/doctor/dashboard', function () {
-        return view('doctor.dashboard');
-    })->name('doctor.dashboard');
+    Route::get('/doctor/dashboard', [DoctorDashboardController::class, 'index'])
+    ->name('doctor.dashboard');
 
     Route::get('/patient/dashboard', function () {
         return view('patient.dashboard');

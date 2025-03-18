@@ -15,7 +15,7 @@
             {{ session('success') }}
           </div>
         @endif
-        <form action="#" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('doctor.upload.report.store', $patient->id) }}" method="POST" enctype="multipart/form-data">
           @csrf
           <div class="form-group mb-3">
             <label for="report" style="font-weight: bold;">Choose Report File (PDF only)</label>
@@ -36,11 +36,17 @@
       </div>
       <div class="card-body" style="text-align: center;">
         @if($patient->images && !$patient->images->isEmpty())
-          @foreach($patient->images as $image)
-            <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank" style="display:block; margin-bottom:10px;">
-              <img src="{{ asset('storage/' . $image->image_path) }}" alt="Patient Scan" class="card-img-top img-fluid" style="max-height:200px; object-fit:cover;">
-            </a>
-          @endforeach
+          <div class="row">
+            @foreach($patient->images as $image)
+              <div class="col-md-4 mb-3">
+                <div class="card">
+                  <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank">
+                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="Patient Scan" class="card-img-top img-fluid" style="max-height:200px; object-fit:cover;">
+                  </a>
+                </div>
+              </div>
+            @endforeach
+          </div>
         @else
           <p>No scans uploaded for this patient yet.</p>
         @endif

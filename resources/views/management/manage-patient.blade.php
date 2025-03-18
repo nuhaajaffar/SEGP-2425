@@ -12,7 +12,7 @@
   
   <h2 class="mb-4">Manage Patients</h2>
   
-  <table>
+  <table class="table table-striped">
     <thead>
       <tr>
         <th>NO</th>
@@ -38,6 +38,7 @@
             <td>{{ $patient->created_at->format('d/m/Y') }}</td>
             <td>
               <a href="{{ route('profile.show', $patient->id) }}" class="btn btn-primary btn-sm">Edit</a>
+              <a href="{{ route('management.appointment', $patient->id) }}" class="btn btn-secondary btn-sm">Appointment</a>
             </td>
           </tr>
         @endforeach
