@@ -32,21 +32,21 @@ Route::get('/images', [ImageController::class, 'showImages'])->name('images.show
 
 // Route to show the scan upload form for a patient
 Route::get('/patient/{patient}/upload-scan', [PatientController::class, 'uploadScanForm'])
-     ->name('radiologist.upload-scan');
+     ->name('radiographer.upload-scan');
 
 // Route to process the scan upload
 Route::post('/patient/{patient}/upload-scan', [PatientController::class, 'uploadScanStore'])
-     ->name('radiologist.upload.store');
+     ->name('radiographer.upload.store');
 
 
      
 // Radiographer: Upload Report for a specific patient
-Route::get('/radiographer/patient/{patient}/upload-report', [PatientController::class, 'uploadReportForm'])
-     ->name('radiographer.report');
+Route::get('/radiologist/patient/{patient}/upload-report', [PatientController::class, 'uploadReportForm'])
+     ->name('radiologist.report');
 
 // Radiographer: Process the report upload
-Route::post('/radiographer/patient/{patient}/upload-report', [PatientController::class, 'uploadReportStore'])
-     ->name('radiographer.upload.report.store');
+Route::post('/radiologist/patient/{patient}/upload-report', [PatientController::class, 'uploadReportStore'])
+     ->name('radiologist.upload.report.store');
 
 // Optionally, a route to view patient details (if needed)
 Route::get('/patient/{patient}/view', [PatientController::class, 'view'])
@@ -132,14 +132,6 @@ Route::get('/management/manage-user', function () {
     return view('management.manage-user');
 })->name('management.manage-user');
 
-// Route for editing a patient profile
-Route::get('/management/profile/{id}', [ManagementController::class, 'editPatient'])
-     ->name('management.profile');
-
-// Route for updating a patient profile
-Route::put('/management/profile/{id}', [ManagementController::class, 'updatePatient'])
-     ->name('management.profile.update');
-
 
 Route::get('/admin/profile', function () {
     return view('admin.profile');
@@ -187,6 +179,14 @@ Route::middleware(['auth.hospital'])->group(function () {
 Route::get('/profile/{id}', [ProfileController::class, 'show'])
      ->name('profile.show');
 
+// Profile edit route (if you want a separate route for editing)
+Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])
+     ->name('profile.edit');
+
+// Profile update route
+Route::put('/profile/{id}', [ProfileController::class, 'update'])
+     ->name('profile.update');
+     
 // Manage Hospital page (for example)
 Route::get('/hospital/manage', [HospitalController::class, 'manage'])
      ->name('hospital.manage');

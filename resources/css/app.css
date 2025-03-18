@@ -237,8 +237,7 @@ header {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
-  background-color: #655EA6;
-  color: #fff;
+  color: black;
   font-size: 1em;
   cursor: pointer;
   transition: background-color .3s ease;
@@ -309,8 +308,8 @@ th, td {
 }
 
 th {
-  background-color: #8174a0;
-  color: white;
+  background-color: #f9f5f6;
+  color: black;
 }
 
 tr:nth-child(even) {
@@ -399,4 +398,10 @@ tr:nth-child(even) {
   .navigation a {
     margin: 0 5px;
   }
+}
+
+.input-big {
+  height: 35px;
+  width: 400px;
+  font-size: 1.0em;
 }

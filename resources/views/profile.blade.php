@@ -2,8 +2,8 @@
 
 @section('main')
 <div class="container mt-5">
-  <h2 class="mb-4">Edit Patient Profile</h2>
-  <form action="{{ route('management.profile.update', $patient->id) }}" method="POST">
+  <h2 class="mb-4">Edit User Profile</h2>
+  <form action="{{ route('profile.show', $patient->id) }}" method="POST">
     @csrf
     @method('PUT')
     

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pixelence</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumCOjURJj5W4lI/hK6W4f+2eVlymGTN5fCLv9m8D" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
         integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" 
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -44,7 +45,7 @@
   <header>
     <h2 class="logo">PIXELENCE</h2>
     <nav class="navigation">
-      <a href="{{ route('radiographer.dashboard') }}">HOME</a>
+      <a href="{{ route('radiologist.dashboard') }}">HOME</a>
       <a href="{{ route('radiographer.patient.search') }}">PATIENTS</a>
       <a href="#">NOTIFICATIONS</a> 
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>

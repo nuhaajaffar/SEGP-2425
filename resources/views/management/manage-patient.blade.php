@@ -37,7 +37,7 @@
             <td>{{ strtoupper($patient->role) }}</td>
             <td>{{ $patient->created_at->format('d/m/Y') }}</td>
             <td>
-              <a href="{{ route('management.profile', $patient->id) }}" class="btn btn-primary btn-sm">Edit</a>
+              <a href="{{ route('profile.show', $patient->id) }}" class="btn btn-primary btn-sm">Edit</a>
             </td>
           </tr>
         @endforeach

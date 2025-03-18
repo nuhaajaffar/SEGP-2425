@@ -1,37 +1,37 @@
 @extends('layouts.radiographer')
 
 @section('main')
-<div class="container mt-5">
-  <div class="row">
-    <!-- Left column: search bar and patient list -->
-    <div class="col-md-3">
-      <!-- Search Bar -->
-      <div class="card mb-3">
-        <div class="card-body">
-          <form method="GET" action="{{ route('radiographer.patient.search') }}">
-            <div class="mb-3">
-              <input type="text" name="query" class="form-control" placeholder="Search patient name..." value="{{ request('query') }}">
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm">Search</button>
-          </form>
-        </div>
-      </div>
-      
-      <!-- Patient List -->
-      <div class="card">
-        <div class="card-header">
-          Patients
-        </div>
-        <ul class="list-group list-group-flush">
-          @foreach($patients as $patient)
-            <li class="list-group-item" style="cursor:pointer;"
-                onclick="window.location='{{ route('patient.history', $patient->id) }}'">
-              {{ $patient->name }} (ID: {{ $patient->id }})
-            </li>
-          @endforeach
-        </ul>
-      </div>
+<div class="container wide-container mt-5">
+  <h3 class="mb-4">Patients</h3>
+  
+  <!-- Search Bar (Optional) -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <form method="GET" action="{{ route('radiographer.patient.search') }}" class="input-group">
+      <input type="text" name="query" class="form-control input-big" placeholder="Search patient name..." value="{{ request('query') }}">
+        <button type="submit" class="btn btn-outline-secondary">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
     </div>
   </div>
+  
+  <!-- Two-Column Table: Name and ID -->
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>HOSPITAL ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($patients as $patient)
+        <tr style="cursor:pointer;" onclick="window.location='{{ route('patient.history', $patient->id) }}'">
+          <td>{{ $patient->name }}</td>
+          <td>{{ $patient->hospital_id }}</td>
+        </tr>
+      @endforeach
+    </tbody>
+  </table>
 </div>
 @endsection

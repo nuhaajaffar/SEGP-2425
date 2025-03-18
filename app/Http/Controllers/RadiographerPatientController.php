@@ -7,6 +7,9 @@ use App\Models\HospitalUser;
 
 class RadiographerPatientController extends Controller
 {
+    /**
+     * Display the patient list for radiographers.
+     */
     public function index(Request $request)
     {
         $query = $request->input('query');
@@ -20,5 +23,14 @@ class RadiographerPatientController extends Controller
             ->get();
 
         return view('radiographer.patient', compact('patients'));
+    }
+
+    /**
+     * Optionally, implement a separate search method if needed.
+     */
+    public function search(Request $request)
+    {
+        // You can have similar logic as index
+        return $this->index($request);
     }
 }

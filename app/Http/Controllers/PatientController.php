@@ -19,7 +19,7 @@ class PatientController extends Controller
     {
         // Retrieve the patient (ensure the role is 'patient')
         $patient = HospitalUser::where('role', 'patient')->findOrFail($patientId);
-        return view('radiologist.upload-scan', compact('patient'));
+        return view('radiographer.upload-scan', compact('patient'));
     }
     
     /**
@@ -48,7 +48,7 @@ class PatientController extends Controller
         ]);
         
         // Redirect to the radiologist dashboard with a success message
-        return redirect()->route('radiologist.dashboard')
+        return redirect()->route('radiographer.dashboard')
                          ->with('success', 'Scan uploaded successfully for patient: ' . $patient->name);
     }
     
@@ -63,7 +63,7 @@ class PatientController extends Controller
         // Retrieve the patient (ensure the role is 'patient')
         $patient = HospitalUser::where('role', 'patient')->findOrFail($patientId);
         // Return the view located at resources/views/radiographer/report.blade.php
-        return view('radiographer.report', compact('patient'));
+        return view('radiologist.report', compact('patient'));
     }
     
     /**
@@ -91,7 +91,7 @@ class PatientController extends Controller
             'report_path'      => $path,
         ]);
         
-        return redirect()->route('radiographer.dashboard')
+        return redirect()->route('radiologist.dashboard')
                          ->with('success', 'Report uploaded successfully for patient: ' . $patient->name);
     }
     
@@ -107,7 +107,7 @@ class PatientController extends Controller
         $patient = HospitalUser::with(['images', 'report'])
                      ->where('role', 'patient')
                      ->findOrFail($patientId);
-        return view('radiographer.report', compact('patient'));
+        return view('radiologist.report', compact('patient'));
     }
     
 }

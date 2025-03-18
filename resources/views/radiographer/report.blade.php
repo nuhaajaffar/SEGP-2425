@@ -2,6 +2,24 @@
 
 @section('main')
 <div class="container mt-5">
+  <!-- Patient Information Box -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3>Patient Information</h3>
+    </div>
+    <div class="card-body">
+      <p><strong>Name:</strong> {{ $patient->name }}</p>
+      <p><strong>IC:</strong> {{ $patient->ic }}</p>
+      <p><strong>Address:</strong> {{ $patient->address }}</p>
+      <p><strong>Contact:</strong> {{ $patient->contact }}</p>
+      <p><strong>Date of Birth:</strong> {{ $patient->dob }}</p>
+      <p><strong>Sex:</strong> {{ ucfirst($patient->sex) }}</p>
+      <!-- Add more patient details as needed -->
+    </div>
+  </div>
+</div>
+
+<div class="container mt-5">
   <!-- Report Upload Form -->
   <h3>Upload Report for Patient: {{ $patient->name }}</h3>
   
@@ -24,8 +42,10 @@
   </form>
   
   <hr>
-  
-  <!-- Section to View Patient Scan Images -->
+</div>
+
+<div class="container mt-5">
+<!-- Section to View Patient Scan Images -->
   <h3>Patient Scan Images</h3>
   @if($patient->images && $patient->images->isEmpty())
     <p>No scans uploaded for this patient yet.</p>
@@ -46,7 +66,8 @@
   @endif
   
   <hr>
-  
+</div>
+<div class="container mt-5">
   <!-- Section to View the Patient Report (if uploaded) -->
   <h3>Patient Report</h3>
   @if($patient->report)
