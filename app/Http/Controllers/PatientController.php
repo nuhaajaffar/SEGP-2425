@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\HospitalUser;
 use App\Models\PatientImage;
 use App\Models\PatientReport;
+use App\Jobs\ProcessMRIImage;
+
 
 class PatientController extends Controller
 {
@@ -38,16 +40,19 @@ class PatientController extends Controller
         $patient = HospitalUser::where('role', 'patient')->findOrFail($patientId);
         $file = $request->file('scan');
         $filename = $file->getClientOriginalName();
+        
         // Save the file in the "scans" folder on the public disk
         $path = $file->storeAs('scans', $filename, 'public');
         
         // Create a record in the patient_images table
-        PatientImage::create([
+        \App\Models\PatientImage::create([
             'hospital_user_id' => $patient->id,
             'image_path'       => $path,
         ]);
         
-        // Redirect to the radiologist dashboard with a success message
+        // Dispatch the job to process the scan (convert the storage path to a full system path)
+        \App\Jobs\ProcessMRIImage::dispatch($patient->id, storage_path('app/public/' . $path));
+        
         return redirect()->route('radiographer.dashboard')
                          ->with('success', 'Scan uploaded successfully for patient: ' . $patient->name);
     }

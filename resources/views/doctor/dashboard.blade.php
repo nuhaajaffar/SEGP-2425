@@ -1,71 +1,35 @@
 @extends('layouts.doctor')
 
 @section('main')
-<div class="wide-container mt-5" style="display: flex; gap: 20px;">
-  <!-- Left Column: Two Stacked Boxes -->
-  <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
-    <!-- Box 1: Upload Report -->
-    <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 20px;">
-      <div class="card-header" style="text-align: center; border-bottom: 2px solid #ccc;">
-        <h3>Upload Report for Patient: {{ $patient->name }}</h3>
-      </div>
-      <div class="card-body">
-        @if(session('success'))
-          <div class="alert alert-success" style="margin-bottom:20px;">
-            {{ session('success') }}
-          </div>
-        @endif
-        <form action="#" method="POST" enctype="multipart/form-data">
-          @csrf
-          <div class="form-group mb-3">
-            <label for="report" style="font-weight: bold;">Choose Report File (PDF only)</label>
-            <input type="file" name="report" id="report" class="form-control-file" style="margin-top:10px;">
-            @error('report')
-              <small style="color:red;">{{ $message }}</small>
-            @enderror
-          </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%;">Upload Report</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Box 2: View Scans -->
-    <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 20px;">
-      <div class="card-header" style="text-align: center; border-bottom: 2px solid #ccc;">
-        <h3>View Scans</h3>
-      </div>
-      <div class="card-body" style="text-align: center;">
-        @if($patient->images && !$patient->images->isEmpty())
-          @foreach($patient->images as $image)
-            <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank" style="display:block; margin-bottom:10px;">
-              <img src="{{ asset('storage/' . $image->image_path) }}" alt="Patient Scan" class="card-img-top img-fluid" style="max-height:200px; object-fit:cover;">
-            </a>
-          @endforeach
-        @else
-          <p>No scans uploaded for this patient yet.</p>
-        @endif
-      </div>
-    </div>
-  </div>
-  
-  <!-- Right Column: Patient History with Review Box -->
-  <div style="flex: 1;">
-    <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-      <div>
-        <h3 style="text-align: center; padding-bottom: 20px;">Patient History</h3>
-        <p><strong>Name:</strong> {{ $patient->name }}</p>
-        <p><strong>IC:</strong> {{ $patient->ic }}</p>
-        <p><strong>Address:</strong> {{ $patient->address }}</p>
-        <p><strong>Contact:</strong> {{ $patient->contact }}</p>
-        <p><strong>Date of Birth:</strong> {{ $patient->dob }}</p>
-        <p><strong>Sex:</strong> {{ ucfirst($patient->sex) }}</p>
-        <!-- Review Textarea -->
-        <textarea class="review-box" placeholder="Type review..." style="width: 100%; height: 100px; margin-top: 15px;"></textarea>
-      </div>
-      <div style="text-align: center; padding-top: 20px;">
-        <button class="button" style="width: 80%;">Mark as Complete</button>
-      </div>
-    </div>
-  </div>
+<div class="wide-container mt-5">
+    <h3>My Assigned Patients</h3>
+    @if($patients->isEmpty())
+        <p>No patients assigned to you at this time.</p>
+    @else
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>IC</th>
+                    <th>Name</th>
+                    <th>Date Joined</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($patients as $patient)
+                    <tr>
+                        <td>{{ $patient->id }}</td>
+                        <td>{{ $patient->ic }}</td>
+                        <td>{{ $patient->name }}</td>
+                        <td>{{ $patient->created_at->format('Y-m-d') }}</td>
+                        <td>
+                            <a href="{{ route('doctor.review', $patient->id) }}" class="btn btn-primary btn-sm">Review</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 </div>
 @endsection

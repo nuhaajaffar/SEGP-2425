@@ -37,12 +37,12 @@
           <h3>Patient Report</h3>
         </div>
         <div class="card-body">
-          @if($patient->report)
-            <p>
-              <a href="{{ asset('storage/' . $patient->report->report_path) }}" class="btn btn-success" target="_blank" style="width:100%;">View Report</a>
-            </p>
+          @if($patient->report && $patient->report->report_path && $patient->report->report_path !== "No report generated due to processing error.")
+            <a href="{{ asset($patient->report->report_path) }}" target="_blank" class="btn btn-primary">
+              View Report
+            </a>
           @else
-            <p>No report uploaded for this patient.</p>
+            <p>No report generated for this patient yet.</p>
           @endif
         </div>
       </div>
