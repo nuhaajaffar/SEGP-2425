@@ -16,20 +16,20 @@ use App\Http\Controllers\RadiographerPatientController;
 use App\Http\Controllers\PatientHistoryController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\DoctorDashboardController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OtpController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DoctorNotificationController;
+use App\Http\Controllers\RadiographerNotificationController;
+use App\Http\Controllers\PatientNotificationController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\AppointmentController;
-
 
 
 // Fallback Home Route
 Route::get('/', function () {
     return view('home');
 })->name('home');
-
-//image
-Route::get('upload', [ImageController::class, 'index'])->name('upload.index');
-Route::post('/upload', [ImageController::class, 'store'])->name('upload.store');
-
-Route::get('/images', [ImageController::class, 'showImages'])->name('images.show');
 
 // Route to show the scan upload form for a patient
 Route::get('/patient/{patient}/upload-scan', [PatientController::class, 'uploadScanForm'])
@@ -38,14 +38,10 @@ Route::get('/patient/{patient}/upload-scan', [PatientController::class, 'uploadS
 // Route to process the scan upload
 Route::post('/patient/{patient}/upload-scan', [PatientController::class, 'uploadScanStore'])
      ->name('radiographer.upload.store');
-
-
      
-// Radiographer: Upload Report for a specific patient
 Route::get('/radiologist/patient/{patient}/upload-report', [PatientController::class, 'uploadReportForm'])
      ->name('radiologist.report');
 
-// Radiographer: Process the report upload
 Route::post('/radiologist/patient/{patient}/upload-report', [PatientController::class, 'uploadReportStore'])
      ->name('radiologist.upload.report.store');
 
@@ -56,6 +52,11 @@ Route::get('/patient/{patient}/view', [PatientController::class, 'view'])
 //RADIOLOGIST-patient
 Route::get('/radiographer/patient', [RadiographerPatientController::class, 'index'])
      ->name('radiographer.patient.search');
+
+
+Route::post('radiologist/patients/{patient}/complete', [
+     PatientController::class, 'markComplete'
+])->name('radiologist.patients.complete');
 
 Route::get('/patient/history/{id}', [PatientHistoryController::class, 'show'])
      ->name('patient.history');
@@ -68,8 +69,16 @@ Route::post('/doctor/upload-report/{patient}', [DoctorDashboardController::class
      ->name('doctor.upload.report.store');
 
 
+Route::get('/loading', function () {
+     return view('loading');
+})->name('loading');
+      
 
 //Named Routes
+Route::get('/home', function () {
+     return view('home');
+ })->name("home");
+ 
 Route::get('/login', function () {
     return view('login');
 })->name("login");
@@ -154,9 +163,8 @@ Route::get('/admin/profile', function () {
 
 // Apply the custom middleware to all dashboard routes
 Route::middleware(['auth.hospital'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
+    ->name('admin.dashboard');
 
     Route::get('/management/dashboard', function () {
         return view('management.dashboard');
@@ -180,6 +188,30 @@ Route::middleware(['auth.hospital'])->group(function () {
         return view('home');
     })->name('home');
 });
+
+
+// Show notifications
+Route::get('/admin/notifications', [NotificationController::class, 'index'])
+     ->name('admin.notifications.index');
+
+// Mark all read
+Route::post('/admin/notifications/read', [NotificationController::class, 'markAllRead'])
+     ->name('admin.notifications.read');
+
+Route::get('/doctor/notifications', [DoctorNotificationController::class, 'index'])
+     ->name('doctor.notifications.index');
+Route::post('/doctor/notifications/read', [DoctorNotificationController::class, 'markAllRead'])
+     ->name('doctor.notifications.read');
+
+Route::get('/radiographer/notifications', [RadiographerNotificationController::class, 'index'])
+     ->name('radiographer.notifications.index');
+Route::post('/radiographer/notifications/read', [RadiographerNotificationController::class, 'markAllRead'])
+     ->name('radiographer.notifications.read');
+
+ Route::get('/patient/notifications', [PatientNotificationController::class, 'index'])
+     ->name('patient.notifications.index');
+Route::post('/patient/notifications/read', [PatientNotificationController::class, 'markAllRead'])
+     ->name('patient.notifications.read');
 
 
 
@@ -220,4 +252,17 @@ Route::get('/settings', function () {
 Route::get('/privacy', function () {
     return view('sidebar.privacy');
 })->name('privacy');
+
+// Signup/show form & send already exist
+Route::get('/index',  [OtpController::class, 'showSignupForm'])
+     ->name('otp.signup.form');
+Route::post('/index', [OtpController::class, 'send'])
+     ->name('otp.signup.send');
+
+// VERIFY routes:
+Route::get('/verify',  [OtpController::class, 'showVerifyForm'])
+     ->name('otp.verify.form');
+Route::post('/verify', [OtpController::class, 'verify'])
+     ->name('otp.verify.submit');
+
 

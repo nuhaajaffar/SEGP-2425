@@ -7,6 +7,8 @@ use App\Models\HospitalUser;
 use App\Models\PatientImage;
 use App\Models\PatientReport;
 use App\Jobs\ProcessMRIImage;
+use App\Notifications\ReportCompleted;
+use Illuminate\Support\Facades\Log;
 
 
 class PatientController extends Controller
@@ -93,7 +95,8 @@ class PatientController extends Controller
         // Create a record in the patient_reports table
         PatientReport::create([
             'hospital_user_id' => $patient->id,
-            'report_path'      => $path,
+            'image_path'       => $this->imagePath,
+            'report_path'      => $reportPathForDB,
         ]);
         
         return redirect()->route('radiologist.dashboard')
@@ -109,10 +112,41 @@ class PatientController extends Controller
      */
     public function view($patientId)
     {
-        $patient = HospitalUser::with(['images', 'report'])
+        $patient = HospitalUser::with(['images', 'reports'])
                      ->where('role', 'patient')
                      ->findOrFail($patientId);
         return view('radiologist.report', compact('patient'));
     }
+
+    /**
+    * Mark a patient's report as complete and notify all doctors.
+    * 
+    * @param  int  $patientId
+    * @return \Illuminate\Http\RedirectResponse
+    */
     
+    public function markComplete(int $patientId)
+    {
+        // 1) Fetch patient
+        $patient = HospitalUser::findOrFail($patientId);
+    
+        // 2) Identify radiologist from session
+        $radiologistId = session('hospital_user');
+        $radiologist   = HospitalUser::where('role','radiologist')->find($radiologistId);
+    
+        // 3) Log it
+        Log::info("Radiologist {$radiologistId} marked patient {$patientId} complete.");
+    
+        // 4) Notify **all** doctors
+        HospitalUser::where('role', 'doctor')
+            ->get()
+            ->each
+            ->notify(new ReportCompleted($radiologist, $patient));
+    
+        // 5) Redirect back
+        return redirect()
+            ->route('radiologist.dashboard')
+            ->with('success', 'Patient marked complete & doctors have been notified.');
+    }
+
 }

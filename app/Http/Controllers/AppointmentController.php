@@ -3,65 +3,63 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use App\Models\Appointment;
 use App\Models\HospitalUser;
+use App\Notifications\AppointmentScheduled;
 
 class AppointmentController extends Controller
 {
-    /**
-     * Display the appointment booking form.
-     * Patient information is pre-populated.
-     * Dropdowns are used to select a doctor, radiologist, and radiographer.
-     */
     public function create($patientId)
     {
-        // Retrieve the patient details (assuming role is 'patient')
-        $patient = HospitalUser::where('role', 'patient')->findOrFail($patientId);
+        $patient      = HospitalUser::where('role','patient')->findOrFail($patientId);
+        $doctors      = HospitalUser::where('role','doctor')->orderBy('name')->get();
+        $radiologists = HospitalUser::where('role','radiologist')->orderBy('name')->get();
+        $radiographers= HospitalUser::where('role','radiographer')->orderBy('name')->get();
 
-        // Retrieve lists for dropdowns
-        $doctors = HospitalUser::where('role', 'doctor')->orderBy('name')->get();
-        $radiologists = HospitalUser::where('role', 'radiologist')->orderBy('name')->get();
-        $radiographers = HospitalUser::where('role', 'radiographer')->orderBy('name')->get();
-
-        return view('management.appointment', compact('patient', 'doctors', 'radiologists', 'radiographers'));
+        return view('management.appointment', compact(
+            'patient','doctors','radiologists','radiographers'
+        ));
     }
 
-    /**
-     * Process the appointment booking.
-     */
     public function store(Request $request, $patientId)
     {
-        $request->validate([
+        $data = $request->validate([
             'doctor_id'        => 'required|exists:hospital_users,id',
             'radiologist_id'   => 'nullable|exists:hospital_users,id',
             'radiographer_id'  => 'nullable|exists:hospital_users,id',
             'appointment_date' => 'required|date_format:Y-m-d\TH:i',
         ]);
-    
-        $patient = HospitalUser::where('role', 'patient')->findOrFail($patientId);
-    
-        // Create the appointment record
-        Appointment::create([
-            'full_name'        => $patient->name,
-            'dob'              => $patient->dob,
-            'ic'               => $patient->ic,
-            'address'          => $patient->address,
-            'username'         => $patient->username,
-            'doctor_id'        => $request->doctor_id,
-            'radiologist_id'   => $request->radiologist_id,
-            'radiographer_id'  => $request->radiographer_id,
-            'appointment_date' => $request->appointment_date,
-        ]);
-    
-        // **Important:** Update the patient record with assignment info
+
+        // 1) Update patient’s assigned staff
+        $patient = HospitalUser::where('role','patient')->findOrFail($patientId);
         $patient->update([
-            'assigned_doctor_id'        => $request->doctor_id,
-            'assigned_radiologist_id'   => $request->radiologist_id,
-            'assigned_radiographer_id'  => $request->radiographer_id,
+            'assigned_doctor_id'      => $data['doctor_id'],
+            'assigned_radiologist_id' => $data['radiologist_id'],
+            'assigned_radiographer_id'=> $data['radiographer_id'],
         ]);
-    
-        return redirect()->route('management.dashboard')
-                         ->with('success', 'Appointment booked successfully.');
+
+        // 2) Create the appointment
+        $appointment = Appointment::create([
+            'hospital_user_id'  => $patient->id,
+            'full_name'         => $patient->name,
+            'dob'               => $patient->dob,
+            'ic'                => $patient->ic,
+            'address'           => $patient->address,
+            'username'          => $patient->username,
+            'doctor_id'         => $data['doctor_id'],
+            'radiologist_id'    => $data['radiologist_id'],
+            'radiographer_id'   => $data['radiographer_id'],
+            'appointment_date'  => $data['appointment_date'],
+        ]);
+
+        // 3) Notify patient & doctor
+        $doctor = HospitalUser::findOrFail($data['doctor_id']);
+        $patient->notify(new AppointmentScheduled($appointment));
+        $doctor->notify(new AppointmentScheduled($appointment));
+
+        return redirect()
+            ->route('management.dashboard')
+            ->with('success','Appointment booked & notifications sent.');
     }
-    
 }

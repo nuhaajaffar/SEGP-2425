@@ -46,7 +46,7 @@
     <nav class="navigation">
       <a href="{{ route('radiologist.dashboard') }}">HOME</a>
       <a href="#">CONSULTATION</a>
-      <a href="#">NOTIFICATIONS</a> 
+      <a href="{{ route('doctor.notifications.index') }}">NOTIFICATIONS</a> 
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
       <a href="#">PROFILE</a>
     </nav>

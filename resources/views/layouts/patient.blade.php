@@ -44,9 +44,9 @@
   <header>
     <h2 class="logo">PIXELENCE</h2>
     <nav class="navigation">
-      <a href="{{ route('radiologist.dashboard') }}">HOME</a>
+      <a href="{{ route('patient.dashboard') }}">HOME</a>
       <a href="#">PATIENT</a>
-      <a href="#">NOTIFICATIONS</a> 
+      <a href="{{ route('patient.notifications.index') }}">NOTIFICATIONS</a> 
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
       <a href="#">PROFILE</a>
     </nav>

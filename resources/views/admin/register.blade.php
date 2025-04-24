@@ -204,21 +204,6 @@ padding-left: 80px; padding-right: 80px;
                         @enderror
                     </div>
 
-                    <div class="flex mt-4">
-                        <!-- PIC's Name -->
-                        {{--                <label for="pic_name" class="form-label">PIC's Name</label>--}}
-                        <input type="text"
-                               name="generate_hospital_id"
-                               id="generate_hospital_id"
-                               class="form-control w-80 px-3 py-2 placeholder:text-sm bg-gray-50 placeholder:text-gray-400 border rounded-md border-gray-300 focus-visible:border-gray-400 focus-visible:outline-0"
-                               value="{{ old('generate_hospital_id') }}"
-                               PLACEHOLDER="GENERATE HOSPITAL ID"
-                               required>
-                        @error('generate_hospital_id')
-                        <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
 
                     <div class="flex mt-4">
                         <!-- PIC's Name -->

@@ -9,7 +9,7 @@ class PatientImage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['hospital_user_id', 'image_path'];
+    protected $fillable = ['hospital_user_id', 'image_path','status'];
 
     public function patient()
     {
