@@ -127,26 +127,34 @@ class PatientController extends Controller
     
     public function markComplete(int $patientId)
     {
-        // 1) Fetch patient
+        // 1) Load the patient
         $patient = HospitalUser::findOrFail($patientId);
     
-        // 2) Identify radiologist from session
+        // 2) Pull radiologist from session
         $radiologistId = session('hospital_user');
         $radiologist   = HospitalUser::where('role','radiologist')->find($radiologistId);
     
-        // 3) Log it
-        Log::info("Radiologist {$radiologistId} marked patient {$patientId} complete.");
+        if (! $radiologist) {
+            return redirect()
+                ->route('radiologist.dashboard')
+                ->with('error','Radiologist not recognized.');
+        }
     
-        // 4) Notify **all** doctors
-        HospitalUser::where('role', 'doctor')
+        // 3) Notify all hospital admins
+        HospitalUser::where('role','hospital admin')
             ->get()
             ->each
             ->notify(new ReportCompleted($radiologist, $patient));
     
-        // 5) Redirect back
+        // 4) Also notify the assigned doctor (if any)
+        if ($doctor = $patient->assignedDoctor) {
+            $doctor->notify(new ReportCompleted($radiologist, $patient));
+        }
+    
         return redirect()
             ->route('radiologist.dashboard')
-            ->with('success', 'Patient marked complete & doctors have been notified.');
+            ->with('success','Patient marked complete & notifications sent to admins and doctor.');
     }
+    
 
 }

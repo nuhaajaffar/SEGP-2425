@@ -24,6 +24,7 @@ class HospitalUser extends Model
         'assigned_doctor_id',
         'assigned_radiologist_id',
         'assigned_radiographer_id',
+        'profile_photo',
     ];
 
     // Relationship: one HospitalUser has one PatientImage
@@ -51,5 +52,12 @@ class HospitalUser extends Model
     public function assignedRadiographer()
     {
         return $this->belongsTo(self::class, 'assigned_radiographer_id');
+    }
+    
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo
+             ? asset('storage/' . $this->profile_photo)
+             : asset('images/default-avatar.png');
     }
 }

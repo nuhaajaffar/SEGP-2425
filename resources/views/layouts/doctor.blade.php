@@ -33,7 +33,7 @@
           </ul>
         </li>  
         
-        <li><a href="{{ route('support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
+        <li><a href="{{ route('home') }}#contact"><i class="fas fa-tv"></i> SUPPORT</a></li>
         <li><a href="{{ route('settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
         <li><a href="{{ route('privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
       </ul>

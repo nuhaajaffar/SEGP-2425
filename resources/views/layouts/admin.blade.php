@@ -22,17 +22,6 @@
       <h1>PIXELENCE</h1>
       <ul>
       <li><a href="{{ route('profile.show', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
-        
-        <!-- Language Dropdown -->
-        <li class="dropdown">
-          <a href="#"><i class="fas fa-globe"></i> LANGUAGE</a>
-          <ul class="dropdown-menu">
-            <li><a href="{{ route('lang.switch', 'en') }}">English</a></li>
-            <li><a href="{{ route('lang.switch', 'es') }}">Español</a></li>
-            <!-- Add more languages as needed -->
-          </ul>
-        </li>  
-        
         <li><a href="{{ route('support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
         <li><a href="{{ route('settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
         <li><a href="{{ route('privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>

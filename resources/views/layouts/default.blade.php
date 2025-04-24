@@ -21,16 +21,6 @@
     <div class="slide">
       <h1>PIXELENCE</h1>
       <ul>
-        <!-- Language Dropdown -->
-        <li class="dropdown">
-          <a href="#"><i class="fas fa-globe"></i> LANGUAGE</a>
-          <ul class="dropdown-menu">
-            <li><a href="{{ route('lang.switch', 'en') }}">English</a></li>
-            <li><a href="{{ route('lang.switch', 'es') }}">Español</a></li>
-            <!-- Add more languages as needed -->
-          </ul>
-        </li>  
-        
         <li><a href="{{ route('support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
         <li><a href="{{ route('settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
         <li><a href="{{ route('privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
@@ -42,12 +32,10 @@
   <header>
     <h2 class="logo">PIXELENCE</h2>
     <nav class="navigation">
-      <a href="{{ url('/') }}">HOME</a>
-      <a href="{{ route('about') }}">ABOUT</a>
-      <a href="{{ route('demo') }}">DEMO</a> 
-      <a href="{{ route('license') }}">LICENSE</a>
-      <a href="{{ route('contact') }}">CONTACT</a>
-      <a href="{{ route('login') }}">Login</a> 
+      <a href="{{ url('/') }}">Home</a>
+      <a href="{{ route('home') }}#how-it-works">How it Works</a>
+      <a href="{{ route('about') }}">About Us</a>
+      <a href="{{ route('license') }}">Licenses</a>
     </nav>
   </header>
 

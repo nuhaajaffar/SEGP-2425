@@ -343,7 +343,7 @@
         </div>
     </section>
 
-    <footer style="background: #0f0f0f; color: #fff; padding: 40px 20px;">
+    <footer style="background: #0f0f0f; color: #fff; padding: 40px 20px;" id="contact" >
         <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;">
             <div style="flex: 1 1 300px; margin-bottom: 20px;">
                 <h3 style="margin-bottom: 10px;">Pixelence</h3>

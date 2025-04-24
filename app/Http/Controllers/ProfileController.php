@@ -4,55 +4,57 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\HospitalUser;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the profile page for the given user.
-     */
-    public function show($id)
+    // Show the read-only profile
+    public function show(int $id)
     {
         $patient = HospitalUser::findOrFail($id);
         return view('profile', compact('patient'));
     }
-    
-    /**
-     * Show the form for editing the user profile.
-     */
-    public function edit($id)
+
+    // Show the edit form
+    public function edit(int $id)
     {
         $patient = HospitalUser::findOrFail($id);
-        return view('profile', compact('patient'));
-        // Alternatively, if you want a separate edit form, you can create a separate view.
+        return view('profile_edit', compact('patient'));
     }
-    
-    /**
-     * Update the user profile.
-     */
-    public function update(Request $request, $id)
+
+    // Process the submitted edits
+    public function update(Request $request, int $id)
     {
-        $request->validate([
-            'username' => 'required|string|max:100|unique:hospital_users,username,' . $id,
+        $patient = HospitalUser::findOrFail($id);
+
+        $data = $request->validate([
             'name'     => 'required|string|max:255',
-            'ic'       => 'required|string|max:50',
-            'address'  => 'required|string|max:255',
-            'contact'  => 'required|string|max:50',
-            'dob'      => 'required|date',
-            'sex'      => 'required|in:male,female',
+            'username' => 'required|string|max:100|unique:hospital_users,username,'.$patient->id,
+            'email'    => 'required|email|unique:hospital_users,email,'.$patient->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'profile_photo' => 'nullable|image|max:2048',
         ]);
-        
-        $patient = HospitalUser::findOrFail($id);
-        $patient->update([
-            'username' => $request->username,
-            'name'     => $request->name,
-            'ic'       => $request->ic,
-            'address'  => $request->address,
-            'contact'  => $request->contact,
-            'dob'      => $request->dob,
-            'sex'      => $request->sex,
-        ]);
-        
-        return redirect()->route('profile.show', $patient->id)
-                         ->with('success', 'Profile updated successfully.');
+
+        // Handle photo
+        if ($file = $request->file('profile_photo')) {
+            if ($patient->profile_photo) {
+                Storage::disk('public')->delete($patient->profile_photo);
+            }
+            $data['profile_photo'] = $file->store('profile_photos', 'public');
+        }
+
+        // Hash password if given
+        if ($data['password'] ?? false) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        $patient->update($data);
+
+        return redirect()
+            ->route('profile.show', $patient->id)
+            ->with('success','Profile updated.');
     }
 }

@@ -24,7 +24,7 @@ use App\Http\Controllers\RadiographerNotificationController;
 use App\Http\Controllers\PatientNotificationController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\AppointmentController;
-
+use App\Http\Controllers\SettingsController;
 
 // Fallback Home Route
 Route::get('/', function () {
@@ -245,9 +245,14 @@ Route::get('/support', function () {
     return view('sidebar.support');
 })->name('support');
 
-Route::get('/settings', function () {
-    return view('sidebar.settings');
-})->name('settings');
+Route::post('/support', [SettingsController::class, 'submitSupport'])
+     ->name('support.submit');
+
+Route::get('/settings', [SettingsController::class, 'editProfile'])
+     ->name('settings');
+
+Route::post('/settings', [SettingsController::class, 'updateProfile'])
+     ->name('settings.update');
 
 Route::get('/privacy', function () {
     return view('sidebar.privacy');
@@ -264,5 +269,4 @@ Route::get('/verify',  [OtpController::class, 'showVerifyForm'])
      ->name('otp.verify.form');
 Route::post('/verify', [OtpController::class, 'verify'])
      ->name('otp.verify.submit');
-
 
