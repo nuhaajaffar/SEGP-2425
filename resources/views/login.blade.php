@@ -1,32 +1,27 @@
 @extends('layouts.default')
 
+@section('sidebar')
+<label>
+    <input type="checkbox" id="toggleMenu">
+    <div class="toggle">
+        <span class="top_line common"></span>
+        <span class="middle_line common"></span>
+        <span class="bottom_line common"></span>
+    </div>
+    <div class="slide">
+        <h1>PIXELENCE</h1>
+        <ul>
+            <li><a href="#"><i class="fas fa-globe"></i> LANGUAGE</a></li>
+            <li><a href="#"><i class="fas fa-tv"></i> SUPPORT</a></li>
+            <li><a href="#"><i class="fas fa-cogs"></i> SETTING</a></li>
+            <li><a href="#"><i class="fas fa-shield"></i> PRIVACY & SECURITY</a></li>
+        </ul>
+    </div>
+</label>
+@endsection
+
 @section('main')
 <style>
-body {
-  background-color: white;
-  overflow: hidden;
-}
-    /* Make the sidebar sit on top of everything else */
-.sidebar-container {
-  position: fixed;       /* keep it in viewport */
-  top: 0;
-  left: 0;
-  height: 100vh;
-  z-index: 1000;         /* higher than your login-wrapper */
-}
-
-/* Ensure the slide panel itself also stacks above */
-.sidebar-container .slide {
-  position: absolute;
-  z-index: 1001;         /* above the toggle button */
-  /* your existing transform/transition rules… */
-}
-
-/* And the toggle icon above the wrapper too */
-.sidebar-container .toggle {
-  position: absolute;
-  z-index: 1002;
-}
   /* Full-height flex layout */
   .login-wrapper { display: flex; height: 100vh; margin: 0; }
   .panel { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
@@ -73,7 +68,6 @@ body {
 
     <div class="form-box">
       <p class="login-heading">Welcome back!</p>
-      <br><br>
 
       @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>

@@ -37,7 +37,7 @@
             <td>{{ strtoupper($patient->role) }}</td>
             <td>{{ $patient->created_at->format('d/m/Y') }}</td>
             <td>
-              <a href="{{ route('profile.show', $patient->id) }}" class="btn btn-primary btn-sm">Edit</a>
+              <a href="{{ route('management.patient.edit', $patient->id) }}" class="btn btn-primary btn-sm">Edit</a>
               <a href="{{ route('management.appointment', $patient->id) }}" class="btn btn-secondary btn-sm">Appointment</a>
             </td>
           </tr>
@@ -48,8 +48,10 @@
   
   <!-- Add User Button -->
   <div class="row mt-3">
-    <div class="col">
-      <a href="{{ route('register.create') }}" class="btn btn-success">Add User</a>
+    <div class="col text-end">
+      <a href="{{ route('register.create') }}" class="btn btn-success">
+        <i class="fas fa-user-plus me-1"></i> Add User
+      </a>
     </div>
   </div>
 </div>

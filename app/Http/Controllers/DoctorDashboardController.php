@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\HospitalUser;
+use App\Models\DoctorReview;
 
 class DoctorDashboardController extends Controller
 {
@@ -50,5 +51,39 @@ class DoctorDashboardController extends Controller
     
         return redirect()->back()->with('success', 'Report uploaded successfully.');
     }
+    public function storeReview(Request $request, $patientId)
+    {
+        $request->validate([
+            'review' => 'required|string',
+        ]);
+    
+        $doctorId = 1; // 👈 TEMP: manually assign a doctor ID until login works
+    
+        DoctorReview::create([
+            'patient_id' => $patientId,
+            'doctor_id'  => $doctorId,
+            'review'     => $request->input('review'),
+        ]);
+    
+        return redirect()->back()->with('success', 'Review submitted successfully.');
+    }
 
+    public function saveReview(Request $request, $patientId)
+    {
+        // Validate the review input
+        $request->validate([
+            'review' => 'required|string',
+        ]);
+    
+    
+        // Save the review
+        DoctorReview::create([
+            'patient_id' => $patientId,
+            'doctor_id'  => $doctorId,
+            'review'     => $request->input('review'),
+        ]);
+    
+        // Redirect back to the patient's page with success message
+        return back()->with('success', 'Review submitted successfully.');
+    }
 }

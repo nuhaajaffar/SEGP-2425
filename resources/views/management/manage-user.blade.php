@@ -1,133 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage User</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .navigation a {
-            color: black;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-        .button {
-            background-color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-            margin-left:0.5%;
-        }        
-        .button:hover {
-            background: #ddd;
-        }
-        .remove {
-            color: white;
-            background-color: black;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-            margin-left:0.5%;
-        }
-        .remove:hover {
-            background: grey;
-        }
-        .container {
-            margin: 4rem auto;
-            width: 80%;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background-color: #8174a0;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f5f6;
-        }
-        @media (max-width: 768px) {
-            .container {
-                width: 95%;
-            }
-            .navigation a {
-                margin: 0 5px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h2 class="logo">PIXELENCE</h2>
-        <nav class="navigation">
-            <a href="#">HOME</a>
-            <a href="#">PATIENT</a>
-            <a href="#">NOTIFICATIONS</a>
-            <a href="#">LOGOUT</a>
-            <a href="#">PROFILE</a>
-        </nav> 
-    </header>
-    <div class="container">
-        <h2 style="margin-top: 20px;">Welcome Back, SOPHIEA!</h2>
-        <br>
-        <button class="button">ACTIVITY</button>
-        <button class="button">APPOINTMENTS</button>
-        <button class="button">ADD PATIENT RECORD</button>
-        <br>
-        <table>
-            <thead>
-                <tr>
-                    <th>NO</th>
-                    <th>USER ID</th>
-                    <th>NAME</th>
-                    <th>ROLE</th>
-                    <th>DATE JOINED</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>20345683</td>
-                    <td>DAVID</td>
-                    <td>DOCTOR</td>
-                    <td>17/11/2024</td>
-                    <td><button class="remove">REMOVE</button></td>                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>20346584</td>
-                    <td>RAJU</td>
-                    <td>RADIOLOGIST</td>
-                    <td>16/11/2024</td>
-                    <td><button class="remove">REMOVE</button></td>
-                </tr>
-            </tbody>
-        </table>
+@extends('layouts.admin')
+
+@section('main')
+<div class="container wide-container">
+  <!-- Nav buttons… -->
+  <div class="row mb-3">
+    <div class="col">
+      <a href="{{ route('management.manage-user') }}" class="btn btn-secondary">Manage User</a>
+      <a href="{{ route('management.manage-patient') }}" class="btn btn-secondary">Manage Patient</a>
     </div>
-</body>
-</html>
+  </div>
+
+  <h2 class="mb-4">Manage Users</h2>
+  
+  <table class="table table-striped table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>#</th><th>ID</th><th>Name</th><th>Role</th><th>Hospital</th>
+        <th>Date Joined</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @forelse($users as $i => $user)
+        <tr>
+          <td>{{ $i + 1 }}</td>
+          <td>{{ $user->id }}</td>
+          <td>{{ $user->name }}</td>
+          <td>{{ strtoupper($user->role) }}</td>
+          <td>{{ optional($user->hospital)->name ?? '—' }}</td>
+          <td>{{ $user->created_at->format('d/m/Y') }}</td>
+          <td>
+            <a href="{{ route('management.user.patients', $user->id) }}" class="btn btn-sm btn-primary">Edit</a>
+            <form action="#" method="POST" class="d-inline">
+              @csrf @method('DELETE')
+              <button onclick="return confirm('Delete {{ $user->name }}?')" 
+                      class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      @empty
+        <tr><td colspan="7" class="text-center">No users found.</td></tr>
+      @endforelse
+    </tbody>
+  </table>
+  
+  <!-- Add User Button -->
+  <div class="row mt-3">
+    <div class="col text-end">
+      <a href="{{ route('register.create') }}" class="btn btn-success">
+        <i class="fas fa-user-plus me-1"></i> Add User
+      </a>
+    </div>
+  </div>
+</div>
+@endsection

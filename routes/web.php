@@ -25,6 +25,8 @@ use App\Http\Controllers\PatientNotificationController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\UserLogController;
+use App\Models\HospitalUser; 
 
 // Fallback Home Route
 Route::get('/', function () {
@@ -62,12 +64,12 @@ Route::get('/patient/history/{id}', [PatientHistoryController::class, 'show'])
      ->name('patient.history');
 
 
-Route::get('/doctor/review/{patient}', [DoctorDashboardController::class, 'review'])
+     Route::get('/doctor/review/{patient}', [DoctorDashboardController::class, 'review'])
      ->name('doctor.review');
-     
-Route::post('/doctor/upload-report/{patient}', [DoctorDashboardController::class, 'uploadReportStore'])
-     ->name('doctor.upload.report.store');
-
+ 
+ // Submit the review (POST)
+ Route::post('/doctor/patient/{patient}/review', [DoctorDashboardController::class, 'storeReview'])
+     ->name('doctor.patient.review.store');
 
 Route::get('/loading', function () {
      return view('loading');
@@ -139,55 +141,89 @@ Route::get('/management/appointment/{patient}', [AppointmentController::class, '
 Route::post('/management/appointment/{patient}', [AppointmentController::class, 'store'])
 ->name('management.appointment.store');
 
-
+Route::get('/management/manage-user', [ManagementController::class, 'manageUser'])
+     ->name('management.manage-user');
 
 // Manage Patient page
 Route::get('/management/manage-patient', [ManagementController::class, 'managePatient'])
      ->name('management.manage-patient');
 
-// Manage User page
-Route::get('/management/manage-user', function () {
-    return view('management.manage-user');
-})->name('management.manage-user');
+
+Route::get(
+    '/management/patient/{patient}/edit',
+    [ManagementController::class, 'editPatient']
+)->name('management.patient.edit');
+
+Route::put(
+    '/management/patient/{patient}',
+    [ManagementController::class, 'updatePatient']
+)->name('management.patient.update');
+
+// For managing a staff user’s list of patients:
+Route::get(
+    '/management/user/{user}/patients',
+    [ManagementController::class, 'editUserPatients']
+)->name('management.user.patients');
+
+Route::put(
+    '/management/user/{user}/patients',
+    [ManagementController::class, 'updateUserPatients']
+)->name('management.user.patients.update');
 
 
 Route::get('/admin/profile', function () {
-    return view('admin.profile');
+    $id   = session('hospital_user');
+    $user = HospitalUser::findOrFail($id);
+    return view('admin.profile', compact('user'));
 })->name('admin.profile');
 
-Route::get('/admin/profile', function () {
-    return view('admin.profile');
-})->name('admin.profile');
+Route::prefix('admin')
+     ->name('admin.')
+     ->group(function() {
 
+    // existing...
+    Route::get('dashboard', [AdminController::class, 'dashboard'])
+         ->name('dashboard');
 
+    // User Logs
+    Route::get('user/logs', [AdminController::class, 'userLogs'])
+         ->name('user.logs');
+
+    // new: show edit form
+    Route::get('patients/{patient}/edit', [AdminController::class, 'editPatient'])
+         ->name('patients.edit');
+
+    // new: handle update
+    Route::put('patients/{patient}', [AdminController::class, 'updatePatient'])
+         ->name('patients.update');
+});
 
 // Apply the custom middleware to all dashboard routes
-Route::middleware(['auth.hospital'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-    ->name('admin.dashboard');
 
-    Route::get('/management/dashboard', function () {
-        return view('management.dashboard');
-    })->name('management.dashboard');
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
+->name('admin.dashboard');
 
-    Route::get('/radiographer/dashboard', [RadiographerActivityController::class, 'index'])
-     ->name('radiographer.dashboard');
+Route::get('/management/dashboard', function () {
+     return view('management.dashboard');
+})->name('management.dashboard');
 
-    Route::get('/radiologist/dashboard', [RadiologistDashboardController::class, 'index'])
-    ->name('radiologist.dashboard');
+Route::get('/radiographer/dashboard', [RadiographerActivityController::class, 'index'])
+->name('radiographer.dashboard');
 
-    Route::get('/doctor/dashboard', [DoctorDashboardController::class, 'index'])
-    ->name('doctor.dashboard');
+Route::get('/radiologist/dashboard', [RadiologistDashboardController::class, 'index'])
+->name('radiologist.dashboard');
 
-    Route::get('/patient/dashboard', function () {
-        return view('patient.dashboard');
-    })->name('patient.dashboard');
+Route::get('/doctor/dashboard', [DoctorDashboardController::class, 'index'])
+->name('doctor.dashboard');
+
+Route::get('/patient/dashboard', [PatientController::class, 'index'])
+    ->name('patient.dashboard');
 
     // Optionally secure your home route too:
-    Route::get('/', function () {
-        return view('home');
-    })->name('home');
-});
+Route::get('/', function () {
+     return view('home');
+})->name('home');
+
 
 
 // Show notifications
@@ -270,3 +306,12 @@ Route::get('/verify',  [OtpController::class, 'showVerifyForm'])
 Route::post('/verify', [OtpController::class, 'verify'])
      ->name('otp.verify.submit');
 
+Route::get('/manage-hospitals', [HospitalController::class, 'manage'])->name('hospital.index');
+Route::get('/manage-hospitals/create', [HospitalController::class, 'create'])->name('hospital.create');
+Route::post('/manage-hospitals', [HospitalController::class, 'store'])->name('hospital.store');
+Route::get('/manage-hospitals/{id}/edit', [HospitalController::class, 'edit'])->name('hospital.edit');
+Route::put('/manage-hospitals/{id}', [HospitalController::class, 'update'])->name('hospital.update');
+Route::delete('/manage-hospitals/{id}', [HospitalController::class, 'destroy'])->name('hospital.destroy');
+ 
+Route::get('/radiographer/user-logs', [UserLogController::class, 'index'])->name('radiographer.user.logs');
+Route::get('/user/{id}/profile', [UserLogController::class, 'show'])->name('user.profile'); // Optional

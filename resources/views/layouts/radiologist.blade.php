@@ -38,7 +38,6 @@
       <a href="{{ route('radiographer.patient.search') }}">PATIENTS</a>
       <a href="#">NOTIFICATIONS</a> 
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
-      <a href="{{ route('profile.show', $patient->id) }}">PROFILE</a>
     </nav>
     <!-- Hidden logout form -->
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

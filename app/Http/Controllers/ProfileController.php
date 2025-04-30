@@ -12,15 +12,14 @@ class ProfileController extends Controller
     // Show the read-only profile
     public function show(int $id)
     {
-        $patient = HospitalUser::findOrFail($id);
-        return view('profile', compact('patient'));
+        $user = HospitalUser::findOrFail($id);
+        return view('profile', compact('user'));
     }
-
-    // Show the edit form
+    
     public function edit(int $id)
     {
-        $patient = HospitalUser::findOrFail($id);
-        return view('profile_edit', compact('patient'));
+        $user = HospitalUser::findOrFail($id);
+        return view('settings', compact('user'));
     }
 
     // Process the submitted edits

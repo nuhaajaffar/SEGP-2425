@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Patient;
 use App\Models\HospitalUser;
 use App\Models\PatientImage;
 use App\Models\PatientReport;
@@ -13,6 +14,12 @@ use Illuminate\Support\Facades\Log;
 
 class PatientController extends Controller
 {
+    public function index()
+    {
+        $patients = Patient::with(['reports', 'appointments'])->get(); // Prevents N+1 queries
+        return view('patient.dashboard', compact('patients'));
+    }
+    
     /**
      * Show the form for uploading a scan for a specific patient.
      *

@@ -1,198 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Settings</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f8ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+@extends('layouts.admin')
 
-        .container {
-            background: white;
-            width: 30%;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+@section('main')
+    @if(session()->has('hospital_user') && isset($user))
+        <style>
+        .avatar-initial {
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 20px;
+          border-radius: 50%;
+          background: #6c63ff;
+          color: #fff;
+          font-size: 48px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          user-select: none;
+          flex-shrink: 0;
         }
+        </style>
 
-        .profile-pic {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #d1b3ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            color: white;
-            margin: 0 auto 15px;
-            position: relative;
-        }
+        <div class="container my-5">
+          <h2 class="mb-4">Account Settings</h2>
+          <form action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-        .edit-icon {
-            width: 24px; 
-            height: 24px;
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 4px;
-            cursor: pointer;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
+            <div class="row gy-4">
+              {{-- Avatar --}}
+              <div class="col-lg-4">
+                <div class="card text-center p-4">
+                  @php $initial = strtoupper(substr($user->name,0,1)); @endphp
+                  @if($user->profile_photo)
+                    <img src="{{ asset('storage/'.$user->profile_photo) }}"
+                         class="rounded-circle mb-3"
+                         style="width:120px; height:120px; object-fit:cover;">
+                  @else
+                    <div class="avatar-initial mb-3">{{ $initial }}</div>
+                  @endif
+                  <div class="mb-3 text-start">
+                    <label class="form-label">Change Photo</label><br>
+                    <input type="file" name="profile_photo" class="form-control form-control-sm">
+                    @error('profile_photo')<div class="text-danger small">{{ $message }}</div>@enderror
+                  </div>
+                </div>
+              </div>
 
-        .edit-icon svg {
-            width: 14px;  
-            height: 14px;
-            fill: #6A5ACD; 
-        }
+              {{-- Sections --}}
+              <div class="col-lg-8">
+                {{-- Profile Information --}}
+                <div class="card p-4 mb-4">
+                  <h5 class="mb-3">Profile Information</h5>
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label">Name</label>
+                    <div class="col-sm-9">
+                      <input type="text" name="name"
+                             value="{{ old('name',$user->name) }}"
+                             class="form-control">
+                      @error('name')<div class="text-danger small">{{ $message }}</div>@enderror
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label">Email</label>
+                    <div class="col-sm-9">
+                      <input type="email" name="email"
+                             value="{{ old('email',$user->email) }}"
+                             class="form-control">
+                      @error('email')<div class="text-danger small">{{ $message }}</div>@enderror
+                    </div>
+                  </div>
+                </div>
 
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        label {
-            font-size: 14px;
-            color: #6A5ACD;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input {
-            width: 95%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            background-color: #f0f0f0;
-        }
-
-        input:read-only {
-            background-color: #f0f0f0;
-            border-color: #ddd;
-            cursor: not-allowed;
-        }
-
-        input:focus {
-            border-color: #6A5ACD;
-            box-shadow: 0px 0px 8px rgba(106, 90, 205, 0.3);
-            outline: none;
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-            width: 48%;
-            transition: 0.3s;
-        }
-
-        .button.primary {
-            background-color: #6A5ACD;
-            color: white;
-        }
-
-        .button.primary:hover {
-            background-color: #5a4dbb;
-        }
-
-        .button.secondary {
-            background-color: #ddd;
-            color: #333;
-        }
-
-        .button.secondary:hover {
-            background-color: #ccc;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="profile-pic">
-            👤
-            <div class="edit-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a1.004 1.004 0 0 0-1.41 0L15.13 3.12l3.75 3.75 1.83-1.83z"/>
-                </svg>
+                {{-- Security --}}
+                <div class="card p-4 mb-4">
+                  <h5 class="mb-3">Security</h5>
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label">New Password</label>
+                    <div class="col-sm-9">
+                      <input type="password" name="password" class="form-control">
+                      <small class="text-muted">Leave blank to keep current</small>
+                      @error('password')<div class="text-danger small">{{ $message }}</div>@enderror
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label">Confirm Password</label>
+                    <div class="col-sm-9">
+                      <input type="password" name="password_confirmation" class="form-control">
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            {{-- Actions --}}
+            <div class="text-end mt-4"><br>
+              <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+              <a href="{{ route('admin.profile', $user->id) }}" class="btn btn-secondary ms-2">Cancel</a>
+            </div>
+          </form>
         </div>
-
-        <form onsubmit="return false;">
-            <div class="input-group">
-                <input type="text" placeholder="Enter your username" value="JohnDoe123" readonly>
-            </div>
-            <div class="input-group">
-                <input type="text" placeholder="Enter your name" value="John Doe" readonly>
-            </div>
-            <div class="input-group">
-                <input type="text" placeholder="Enter your IC" value="040111107234" readonly>
-            </div>
-            <div class="input-group">
-                <input type="text" placeholder="Enter your address" value="Semenyih" readonly>
-            </div>
-            <div class="input-group">
-                <input type="text" placeholder="Enter your hospital ID" value="KPJ103" readonly>
-            </div>
-            <div class="input-group">
-                <input type="text" placeholder="Enter your role" value="Doctor" readonly>
-            </div>
-            <div class="input-group">
-                <input type="text" placeholder="Enter your contact" value="01223234213" readonly>
-            </div>
-
-            <div class="button-group">
-                <button type="button" class="button secondary">Manage Account</button>
-                <button type="button" class="button primary" id="edit-btn">Edit</button>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        document.getElementById('edit-btn').addEventListener('click', function() {
-    let inputs = document.querySelectorAll('input');
-    let isEditing = inputs[0].readOnly === false;
-
-    if (isEditing) {
-        inputs.forEach(input => {
-            input.readOnly = true;
-            input.style.backgroundColor = 'white'; // Change back to white when saved
-        });
-        this.textContent = 'Edit';
-    } else {
-        inputs.forEach(input => {
-            input.readOnly = false;
-            input.style.backgroundColor = '#e7e2ec'; // Change to grey when editing
-        });
-        this.textContent = 'Save';
-    }
-});
-
-    </script>
-
-</body>
-</html>
+    @else
+        <div class="container my-5">
+          <div class="alert alert-warning text-center">
+            You must <a href="{{ route('login') }}">log in</a> to view or edit your account settings.
+          </div>
+        </div>
+    @endif
+@endsection

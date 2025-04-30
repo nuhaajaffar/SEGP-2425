@@ -2,50 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Hospital;
 use App\Models\HospitalUser;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class UserRegistrationController extends Controller
 {
-    // Display the registration form
+    /**
+     * Show the “Add User” form with a hospital dropdown.
+     */
     public function create()
     {
-        // Now using the view 'admin.user' for registration
-        return view('admin.user');
+        // Load all hospitals (code + name) for the <select>
+        $hospitals = Hospital::orderBy('name')
+                             ->get(['code','name']);
+
+        // Render the blade that lives at resources/views/admin/user.blade.php
+        return view('admin.user', compact('hospitals'));
     }
 
-    // Process the registration data
+    /**
+     * Handle the form POST and create a new HospitalUser.
+     */
     public function store(Request $request)
     {
-        // Validate incoming data
-        $request->validate([
-            'name'     => 'required|string|max:255',
-            'ic'       => 'required|string|max:50',
-            'address'  => 'required|string|max:255',
-            'role'     => 'required|string|max:100',
-            'contact'  => 'required|string|max:50',
-            'username' => 'required|string|max:100|unique:hospital_users,username',
-            'password' => 'required|string|min:6|confirmed',
+        $data = $request->validate([
+            'name'           => 'required|string|max:255',
+            'ic'             => 'required|string|max:20',
+            'address'        => 'required|string',
+            'dob'            => 'required|date',
+            'sex'            => 'required|in:male,female',
+            'role'           => 'required|in:patient,doctor,radiologist,radiographer,hospital management,hospital admin',
+            'contact'        => 'required|string',
+            'username'       => 'required|email|unique:hospital_users,username',
+            'password'       => 'required|string|confirmed|min:6',
+            'hospital_code'  => 'required|exists:hospitals,code',
         ]);
 
-        // Auto-generate a unique hospital ID (at least 4 digits)
-        $randomNumber = rand(1, 9999);
-        $hospitalId = str_pad($randomNumber, 4, '0', STR_PAD_LEFT);
+        $hospital = Hospital::where('code', $data['hospital_code'])->firstOrFail();
 
+        // Create the user record
         HospitalUser::create([
-            'name'        => $request->name,
-            'ic'          => $request->ic,
-            'address'     => $request->address,
-            'hospital_id' => $hospitalId,
-            'role'        => $request->role,
-            'contact'     => $request->contact,
-            'username'    => $request->username,
-            'password'    => Hash::make($request->password),
-            'dob'         => $request->dob,  
-            'sex'         => $request->sex,  
+            'name'           => $data['name'],
+            'ic'             => $data['ic'],
+            'address'        => $data['address'],
+            'dob'            => $data['dob'],
+            'sex'            => $data['sex'],
+            'role'           => $data['role'],
+            'contact'        => $data['contact'],
+            'username'       => $data['username'],
+            'password'       => bcrypt($data['password']),
+            'hospital_code'  => $data['hospital_code'],
+            'hospital_id'    => $hospital->id,
         ]);
 
-        return redirect()->back()->with('success', 'User registration successful.');
+        return redirect()->route('management.manage-patient')
+                         ->with('success','User added successfully—please log in.');
     }
 }

@@ -104,7 +104,7 @@ def generate_report(prediction, confidence, img_path, report_filepath, patient_i
     pdf.cell(200, 10, "Prediction Result:", ln=True)
     pdf.set_font("Arial", "", 12)
     pdf.cell(200, 10, f"Detected Tumor Type: {prediction.upper()}", ln=True)
-    pdf.cell(200, 10, f"Confidence Level: {confidence:.2f}%", ln=True)
+    pdf.cell(200, 10, f"Accuracy Level: {confidence:.2f}%", ln=True)
     pdf.ln(10)
 
     pdf.set_font("Arial", "B", 12)

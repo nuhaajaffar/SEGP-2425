@@ -37,7 +37,6 @@
       <a href="#">PATIENT</a>
       <a href="{{ route('patient.notifications.index') }}">NOTIFICATIONS</a> 
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
-      <a href="#">PROFILE</a>
     </nav>
     <!-- Hidden logout form -->
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

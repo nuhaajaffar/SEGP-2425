@@ -301,14 +301,6 @@
                     </ul>
                 </div>
             </div>
-            <div class="custom-license">
-                <div>
-                    <button class="add-btn">Add Custom License</button>
-                    <input type="text" id="licenseName" placeholder="Name of License">
-                    <textarea id="licenseDesc" rows="5" placeholder="Descriptions & Conditions"></textarea>
-                    <button class="save-btn" onclick="saveCustom()">Save Custom License</button>
-                </div>
-            </div>
         </div>
     </div>
 

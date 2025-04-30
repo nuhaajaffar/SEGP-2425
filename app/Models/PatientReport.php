@@ -9,7 +9,7 @@ class PatientReport extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['hospital_user_id', 'report_path'];
+    protected $fillable = ['hospital_user_id', 'report_path', 'doctor_review', ];
 
     public function patient()
     {
