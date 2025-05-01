@@ -131,7 +131,7 @@ class ManagementController extends Controller
             ->route('management.settings')
             ->with('success','Profile updated successfully.');
     }
-    
+
     public function manageHospital()
     {
         // load all hospitals (adjust query as needed)
@@ -197,5 +197,34 @@ class ManagementController extends Controller
         $mail->send();
 
         return back()->with('success','Your support ticket has been sent.');
+    }
+    public function index(Request $request)
+    {
+        $query = $request->input('query');
+
+        // Retrieve patients with role 'patient', optionally filtering by name.
+        $patients = HospitalUser::where('role', 'patient')
+            ->when($query, function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            })
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return view('management.patient', compact('patients'));
+    }
+
+    /**
+     * Optionally, implement a separate search method if needed.
+     */
+    public function search(Request $request)
+    {
+        // You can have similar logic as index
+        return $this->index($request);
+    }
+    public function show($id)
+    {
+        // Retrieve the patient record (for patients with role 'patient')
+        $patient = HospitalUser::where('role', 'patient')->findOrFail($id);
+        return view('management.history', compact('patient'));
     }
 }

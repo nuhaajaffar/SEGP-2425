@@ -23,9 +23,10 @@
       <ul>
       <li><a href="{{ route('profile.show', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
         
-        <li><a href="{{ route('home') }}#contact"><i class="fas fa-tv"></i> SUPPORT</a></li>
-        <li><a href="{{ route('settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
-        <li><a href="{{ route('privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+      <li><a href="{{ route('doctor.support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
+      <li><a href="{{ route('doctor.settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
+      <li><a href="{{ route('doctor.privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+      
       </ul>
     </div>
   </div>
@@ -34,8 +35,8 @@
   <header>
     <h2 class="logo">PIXELENCE</h2>
     <nav class="navigation">
-      <a href="{{ route('radiologist.dashboard') }}">HOME</a>
-      <a href="#">CONSULTATION</a>
+      <a href="{{ route('doctor.dashboard') }}">HOME</a>
+      <a href="{{ route('doctor.consultation.create') }}">CONSULTATION</a>
       <a href="{{ route('doctor.notifications.index') }}">NOTIFICATIONS</a> 
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
     </nav>

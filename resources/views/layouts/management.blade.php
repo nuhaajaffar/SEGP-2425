@@ -39,7 +39,7 @@
     <h2 class="logo">PIXELENCE</h2>
     <nav class="navigation">
       <a href="{{ route('management.manage-user') }}">HOME</a>
-      <a href="{{ route('radiographer.patient.search') }}">PATIENT</a>
+      <a href="{{ route('management.patient.search') }}">PATIENT</a>
       <a href="#">NOTIFICATION</a>
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
     </nav>

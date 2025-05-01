@@ -27,6 +27,7 @@
         <li><a href="{{ route('admin.support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
         <li><a href="{{ route('admin.settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
         <li><a href="{{ route('admin.privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+      
       </ul>
     </div>
   </div>

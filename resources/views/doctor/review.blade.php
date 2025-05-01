@@ -1,74 +1,100 @@
 @extends('layouts.doctor')
 
 @section('main')
-<div class="wide-container mt-5" style="display: flex; gap: 20px;">
-  <!-- Left Column: Two Stacked Boxes -->
-  <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
-    
-    <!-- Box 1: Patient Reports Listing (View Report) -->
-    <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 20px;">
-      <div class="card-header" style="text-align: center; border-bottom: 2px solid #ccc;">
-        <h3>Patient Reports</h3>
-      </div>
-      <div class="card-body">
-        @if($patient->reports && $patient->reports->isNotEmpty())
-          <ul class="list-group">
-            @foreach($patient->reports as $report)
-              <li class="list-group-item">
-                <a href="{{ asset($report->report_path) }}" target="_blank" class="btn btn-primary">
-                  {{ basename($report->report_path) }}
-                </a>
-              </li>
-            @endforeach
-          </ul>
-        @else
-          <p>No reports generated for this patient yet.</p>
-        @endif
+<div class="wide-container mt-5">
+  <!-- Top Row: Two Columns -->
+  <div style="display: flex; gap: 20px; margin-bottom: 40px;">
+
+    <!-- Left Column: Past Reviews -->
+    <div style="flex: 1;">
+      <div class="card" style="border:2px solid #ccc; border-radius:8px; padding:20px;">
+        <div class="card-header" style="text-align:center; border-bottom:2px solid #ccc;">
+          <h3>Past Reviews for {{ $patient->name }}</h3>
+        </div>
+        <div class="card-body">
+          @if($reviews->isNotEmpty())
+            <ul class="list-group">
+              @foreach($reviews as $rev)
+                <li class="list-group-item">
+                  <p>{{ $rev->review }}</p>
+                  <small class="text-muted">
+                    — Dr. {{ $rev->doctor->name }}
+                    on {{ $rev->created_at->format('d/m/Y H:i') }}
+                  </small>
+                </li>
+              @endforeach
+            </ul>
+          @else
+            <p class="text-center">No reviews yet.</p>
+          @endif
+        </div>
       </div>
     </div>
 
-    <!-- Box 2: View Scans -->
-    <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 20px;">
-      <div class="card-header" style="text-align: center; border-bottom: 2px solid #ccc;">
-        <h3>View Scans</h3>
-      </div>
-      <div class="card-body" style="text-align: center;">
-        @if($patient->images && !$patient->images->isEmpty())
-          <div class="row">
-            @foreach($patient->images as $image)
-              <div class="col-md-4 mb-3">
-                <div class="card">
-                  <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank">
-                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="Patient Scan" class="card-img-top img-fluid" style="max-height:200px; object-fit:cover;">
-                  </a>
-                </div>
-              </div>
-            @endforeach
+    <!-- Right Column: Patient History + Write Review -->
+    <div style="flex: 1;">
+      <div class="card" style="border:2px solid #ccc; border-radius:8px; padding:30px; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+        
+        <div>
+          <h1 class="text-center mb-4">Patient History</h1>
+          <p><strong>Name:</strong> {{ $patient->name }}</p>
+          <p><strong>IC:</strong> {{ $patient->ic }}</p>
+          <p><strong>Address:</strong> {{ $patient->address }}</p>
+          <p><strong>Contact:</strong> {{ $patient->contact }}</p>
+          <p><strong>DOB:</strong> {{ $patient->dob }}</p>
+          <p><strong>Sex:</strong> {{ ucfirst($patient->sex) }}</p>
+        </div>
+
+        {{-- Write Review Form --}}
+        <form action="{{ route('doctor.review.store', $patient->id) }}" method="POST" style="margin-top:20px;">
+          @csrf
+          <div class="mb-3">
+            <textarea name="review"
+                      class="form-control"
+                      rows="4"
+                      placeholder="Type your review here..."
+                      style="width: 100%;"
+                      required>{{ old('review') }}</textarea>
+            @error('review')
+              <div class="text-danger small">{{ $message }}</div>
+            @enderror
           </div>
-        @else
-          <p>No scans uploaded for this patient yet.</p>
-        @endif
+          <button type="submit" class="btn btn-success w-100">
+            Save Review
+          </button>
+        </form>
+
       </div>
     </div>
+
   </div>
-  
-  <!-- Right Column: Patient History with Review Box -->
-  <div style="flex: 1;">
-    <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-      <div>
-        <h3 style="text-align: center; padding-bottom: 20px;">Patient History</h3>
-        <p><strong>Name:</strong> {{ $patient->name }}</p>
-        <p><strong>IC:</strong> {{ $patient->ic }}</p>
-        <p><strong>Address:</strong> {{ $patient->address }}</p>
-        <p><strong>Contact:</strong> {{ $patient->contact }}</p>
-        <p><strong>Date of Birth:</strong> {{ $patient->dob }}</p>
-        <p><strong>Sex:</strong> {{ ucfirst($patient->sex) }}</p>
-        <!-- Review Textarea -->
-        <textarea class="review-box" placeholder="Type review..." style="width: 100%; height: 100px; margin-top: 15px;"></textarea>
-      </div>
-      <div style="text-align: center; padding-top: 20px;">
-        <button class="button" style="width: 80%;">Mark as Complete</button>
-      </div>
+
+  <!-- Bottom Row: Patient Scan Images -->
+  <div class="card" style="border:2px solid #ccc; border-radius:8px; padding:20px;">
+    <div class="card-header" style="text-align:center; border-bottom:2px solid #ccc;">
+      <h3>Patient Scan Images</h3>
+    </div>
+    <div class="card-body">
+      @if($patient->images->isNotEmpty())
+        <div class="row gx-3">
+          @foreach($patient->images as $image)
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <a href="{{ asset('storage/'.$image->image_path) }}" target="_blank">
+                  <img src="{{ asset('storage/'.$image->image_path) }}"
+                       class="card-img-top img-fluid"
+                       style="max-height:200px; object-fit:cover;">
+                </a>
+                <div class="card-body">
+                  <p class="small mb-0 text-truncate">{{ $image->image_path }}</p>
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      @else
+        <p class="text-center">No scans uploaded yet.</p>
+      @endif
     </div>
   </div>
 </div>

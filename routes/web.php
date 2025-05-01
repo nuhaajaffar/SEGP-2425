@@ -27,6 +27,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserLogController;
 use App\Models\HospitalUser; 
+use App\Http\Controllers\ConsultationController;
 
 
 // Fallback Home Route
@@ -64,13 +65,45 @@ Route::post('radiologist/patients/{patient}/complete', [
 Route::get('/patient/history/{id}', [PatientHistoryController::class, 'show'])
      ->name('patient.history');
 
+//DOCTOR
+Route::prefix('doctor')
+     ->name('doctor.')
+     ->group(function() {
+    // Show the review page
+    Route::get(
+        'patient/{patient}/review',
+        [DoctorDashboardController::class, 'review']
+    )->name('review');
 
-     Route::get('/doctor/review/{patient}', [DoctorDashboardController::class, 'review'])
-     ->name('doctor.review');
- 
- // Submit the review (POST)
- Route::post('/doctor/patient/{patient}/review', [DoctorDashboardController::class, 'storeReview'])
-     ->name('doctor.patient.review.store');
+    // Handle the review form submission
+    Route::post(
+        'patient/{patient}/review',
+        [DoctorDashboardController::class, 'storeReview']
+    )->name('review.store');
+
+    // SUPPORT / SETTINGS / PRIVACY
+    Route::get('support',   [DoctorDashboardController::class, 'supportForm'])
+         ->name('support');
+    Route::post('support',  [DoctorDashboardController::class, 'submitSupport'])
+         ->name('support.submit');
+
+    Route::get('settings',  [DoctorDashboardController::class, 'editProfile'])
+         ->name('settings');
+    Route::post('settings', [DoctorDashboardController::class, 'updateProfile'])
+         ->name('settings.update');
+
+    Route::get('privacy', function () {
+        return view('doctor.privacy');
+    })->name('privacy');
+
+    Route::get('consultation', [ConsultationController::class,'create'])
+         ->name('consultation.create');
+
+    // POST  /doctor/consultation
+    Route::post('consultation', [ConsultationController::class,'store'])
+         ->name('consultation.store');
+});
+
 
 Route::get('/loading', function () {
      return view('loading');
@@ -199,10 +232,14 @@ Route::prefix('management')
     Route::get('privacy', function () {
         return view('management.privacy');
     })->name('privacy');
+
+    Route::get('patient', [ManagementController::class, 'index'])
+     ->name('patient.search');
+
+     Route::get('history/{id}', [ManagementController::class, 'show'])
+     ->name('history');
+
 });
-
-
-
 
 Route::get('/admin/profile', function () {
     $id   = session('hospital_user');
