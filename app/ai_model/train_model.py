@@ -54,7 +54,7 @@ model = Sequential([
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Train the model.
-history = model.fit(train_generator, epochs=5, validation_data=test_generator)
+history = model.fit(train_generator, epochs=15, validation_data=test_generator)
 loss, accuracy = model.evaluate(test_generator)
 print(f"Test Accuracy: {accuracy * 100:.2f}%")
 

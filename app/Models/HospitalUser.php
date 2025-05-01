@@ -4,48 +4,85 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class HospitalUser extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
+    // Allow mass-assignment of both the FK and all user fields
     protected $fillable = [
         'name',
         'ic',
         'address',
-        'hospital_id',
+
+        // These two columns handle your hospital link:
+        'hospital_code',   // the human-readable code the user picks
+        'hospital_id',     // the numeric FK pointing at hospitals.id
+
         'role',
         'contact',
         'username',
         'password',
         'dob',
         'sex',
+
+        'assigned_doctor_id',
+        'assigned_radiologist_id',
+        'assigned_radiographer_id',
+
+        'profile_photo',
     ];
 
-    // Relationship: one HospitalUser has one PatientImage
+    public function hospital()
+    {
+        // foreign key = hospital_code, owner key = code
+        return $this->belongsTo(Hospital::class, 'hospital_code', 'code');
+    }
+    /**
+     * If this user is a patient, their uploaded images.
+     */
     public function images()
     {
-        return $this->hasMany(\App\Models\PatientImage::class, 'hospital_user_id', 'id');
+        return $this->hasMany(PatientImage::class, 'hospital_user_id');
     }
 
-    public function report()
+    /**
+     * If this user is a patient, their generated reports.
+     */
+    public function reports()
     {
-        // A patient can have one report (use hasOne, or hasMany if needed)
-            return $this->hasOne(\App\Models\PatientReport::class, 'hospital_user_id');
-
+        return $this->hasMany(PatientReport::class, 'hospital_user_id');
     }
+    public function reviews()
+    {
+        return $this->hasMany(DoctorReview::class, 'patient_id');
+    }
+    /**
+     * Assigned staff relationships.
+     */
     public function assignedDoctor()
     {
-        return $this->belongsTo(HospitalUser::class, 'assigned_doctor_id');
+        return $this->belongsTo(self::class, 'assigned_doctor_id');
     }
-    
+
     public function assignedRadiologist()
     {
-        return $this->belongsTo(HospitalUser::class, 'assigned_radiologist_id');
+        return $this->belongsTo(self::class, 'assigned_radiologist_id');
     }
-    
+
     public function assignedRadiographer()
     {
-        return $this->belongsTo(HospitalUser::class, 'assigned_radiographer_id');
+        return $this->belongsTo(self::class, 'assigned_radiographer_id');
+    }
+
+    /**
+     * Profile photo URL accessor, with a default fallback.
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo
+            ? asset('storage/' . $this->profile_photo)
+            : asset('images/default-avatar.png');
     }
 }

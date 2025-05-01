@@ -1,32 +1,65 @@
 @extends('layouts.patient')
 
-@section('sidebar')
-<label>
-    <input type="checkbox" id=""toggleMenu>
-    <div class="toggle">
-        <span class="top_line common"></span>
-        <span class="middle_line common"></span>
-        <span class="bottom_line common"></span>
-    </div>
-        
-    <div class="slide">
-        <h1>PIXELENCE</h1>
-        <ul>
-            <li><a href="#"><i class="fas fa-globe"></i>LANGUAGE</a></li>
-            <li><a href="#"><i class="fas fa-tv"></i>SUPPORT</a></li>
-            <li><a href="#"><i class="fas fa-cogs"></i>SETTING</a></li>
-            <li><a href="#"><i class="fas fa-shield"></i>PRIVACY & SECURITY</a></li>
-        </ul>
-    </div>
-        
-</label>
-@endsection
-
 @section('main')
-<main>
-    <h3>WELCOME BACK</h3>
-    <p>
-        PATIENT
-    </p>
-</main> 
+<div class="container wide-container">
+  <h2 class="mb-4">Patient Dashboard</h2>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>NO</th>
+        <th>ID</th>
+        <th>IC</th>
+        <th>NAME</th>
+        <th>CATEGORY</th>
+        <th>STATUS</th>
+        <th>DATE</th>
+        <th>ACTION</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if($patients->isEmpty())
+        <tr>
+          <td colspan="8">No patients found.</td>
+        </tr>
+      @else
+        @foreach($patients as $index => $patient)
+          <tr>
+            <td>{{ $index + 1 }}</td>
+            <td>{{ $patient->id }}</td>
+            <td>{{ $patient->ic }}</td>
+            <td>{{ $patient->name }}</td>
+            
+            {{-- CATEGORY --}}
+            <td>
+              @if($patient->reports->isEmpty())
+                Prepare for Scanning
+              @elseif(!$patient->appointments->isEmpty())
+                Consultation
+              @else
+                Sent for Scan Review
+              @endif
+            </td>
+
+            {{-- STATUS --}}
+            <td>
+              @if($patient->reports->where('status', 'complete')->isNotEmpty())
+                Completed
+              @else
+                Pending
+              @endif
+            </td>
+
+            <td>{{ $patient->created_at->format('d/m/Y') }}</td>
+
+            <td>
+              <a href="{{ route('management.patient.edit', $patient->id) }}" class="btn btn-primary btn-sm">Edit</a>
+              <a href="{{ route('management.appointment', $patient->id) }}" class="btn btn-secondary btn-sm">Appointment</a>
+            </td>
+          </tr>
+        @endforeach
+      @endif
+    </tbody>
+  </table>
+</div>
 @endsection

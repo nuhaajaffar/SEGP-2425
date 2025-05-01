@@ -21,20 +21,23 @@
           <td>{{ $patient->id }}</td>
           <td>{{ $patient->ic ?? $patient->ic }}</td>
           <td>{{ $patient->name }}</td>
-          <!-- Since the patient hasn't uploaded an image, the Category is "Upload Scan" -->
           <td>
             <a href="{{ route('radiographer.upload-scan', $patient->id) }}" class="btn btn-primary btn-sm">
-            Upload Scan
+              Upload Scan
             </a>
           </td>
           <td>{{ $patient->created_at->format('Y-m-d') }}</td>
-          <!-- Status is "Pending" if the scan has not been uploaded -->
-          <td>Pending</td>
+          <td>
+            @if($patient->images && $patient->images->isNotEmpty())
+              {{ ucfirst($patient->images->first()->status) }}
+            @else
+              Pending
+            @endif
+          </td>
         </tr>
         @endforeach
       </tbody>
     </table>
   </div>
 </div>
-
 @endsection

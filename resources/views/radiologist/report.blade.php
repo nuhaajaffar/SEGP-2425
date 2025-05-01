@@ -6,7 +6,8 @@
   <div style="display: flex; gap: 20px; margin-bottom: 40px;">
     <!-- Left Column: Two Stacked Boxes -->
     <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
-      <!-- Box 1: Upload Report -->
+      
+      <!-- Box 1: Upload Report (Manual Upload) -->
       <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 20px;">
         <div class="card-header" style="text-align: center; border-bottom: 2px solid #ccc;">
           <h3>Upload Report for Patient: {{ $patient->name }}</h3>
@@ -31,21 +32,28 @@
         </div>
       </div>
       
-      <!-- Box 2: Patient Report -->
+      <!-- Box 2: Patient Reports Listing -->
       <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 20px;">
         <div class="card-header" style="text-align: center; border-bottom: 2px solid #ccc;">
-          <h3>Patient Report</h3>
+          <h3>Patient Reports</h3>
         </div>
         <div class="card-body">
-          @if($patient->report && $patient->report->report_path && $patient->report->report_path !== "No report generated due to processing error.")
-            <a href="{{ asset($patient->report->report_path) }}" target="_blank" class="btn btn-primary">
-              View Report
-            </a>
+          @if($patient->reports && $patient->reports->isNotEmpty())
+            <ul class="list-group">
+              @foreach($patient->reports as $report)
+                <li class="list-group-item">
+                  <a href="{{ asset($report->report_path) }}" target="_blank" class="btn btn-primary">
+                    {{ basename($report->report_path) }}
+                  </a>
+                </li>
+              @endforeach
+            </ul>
           @else
-            <p>No report generated for this patient yet.</p>
+            <p>No reports generated for this patient yet.</p>
           @endif
         </div>
       </div>
+      
     </div>
     
     <!-- Right Column: Patient History -->
@@ -60,14 +68,18 @@
           <p><strong>Date of Birth:</strong> {{ $patient->dob }}</p>
           <p><strong>Sex:</strong> {{ ucfirst($patient->sex) }}</p>
         </div>
+        <!-- resources/views/radiologist/show.blade.php -->
         <div style="text-align: center; padding-top: 20px;">
-          <button class="button" style="width: 80%;">Mark as Complete</button>
+          <form action="{{ route('radiologist.patients.complete', $patient->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-success" style="width: 80%;">Mark as Complete</button>
+          </form>        
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Bottom Row: Full-Width Patient Scan Images -->
+  
+  <!-- Bottom Row: Patient Scan Images with Image Path Display -->
   <div class="card" style="border: 2px solid #ccc; border-radius: 8px; padding: 20px; width: 100%;">
     <div class="card-header" style="text-align: center; border-bottom: 2px solid #ccc;">
       <h3>Patient Scan Images</h3>
@@ -81,6 +93,9 @@
                 <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank">
                   <img src="{{ asset('storage/' . $image->image_path) }}" alt="Patient Scan" class="card-img-top img-fluid" style="max-height:200px; object-fit:cover;">
                 </a>
+                <div class="card-body">
+                  <p class="text-center">{{ $image->image_path }}</p>
+                </div>
               </div>
             </div>
           @endforeach

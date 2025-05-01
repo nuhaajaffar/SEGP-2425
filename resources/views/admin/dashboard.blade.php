@@ -1,180 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity Dashboard</title>
-    <style>
+{{-- resources/views/admin/dashboard.blade.php --}}
 
-        .container{
-            width: 1200px;
-            min-width: 1200px;
-            max-width: 100vw;
-            margin:0 auto;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: white;
-        }
-        h2 {
-            color: #6A5ACD;
-            margin-left:10%;
-        }
-        .button {
-            background-color: #f8caca;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-            margin-left:10%;
-        }
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin-top: 40px;
-            background-color: #fff;
-            margin-left: 10%;
-            border-radius: 10px;
-           
-            
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 18px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
+@extends('layouts.admin')
 
-        col.id{
-            width: 4%;
-        }
-        col.medical-specialist {
-            width: 14%; 
-        }
+@section('main')
+<div class="container wide-container mt-5">
+  <h2 class="mb-4">Patient Overview</h2>
 
-        col.hospital{
-            width: 4%;
-        }
-
-        col.hospital-id{
-            width: 14%;
-        }
-
-        col.activity{
-            width: 15%;
-        }
-        col.patient-id{
-            width: 12%;
-        }
-
-        @media (max-width:1366px){
-            .container{
-                width:95%;
-                min-width:unset;
-
-            }
-
-            table{
-                font-size:14px;
-
-            }
-            th,td{
-                padding: 8px;
-            }
-        }
-        tbody tr:hover {
-    background-color: #d7d1d1; /* Light pink hover effect */
-    transition: background-color 0.3s ease-in-out; /* Smooth transition */
-}
-
-      
-    </style>
-</head>
-<body>
-    <h2>Welcome back <strong>TERESA!</strong></h2>
-    <button class="button">ACTIVITY</button>
-    
-    <table>
-        <!-- Define column widths -->
-        <colgroup>
-            <col class="id">
-            <col class="hospital-id">
-            <col class="hospital">
-            <col class="patient-id">
-            <col class="activity">
-            <col class="medical-specialist"> <!-- Making this column smaller -->
-            <col>
-            <col>
-        </colgroup>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>HOSPITAL ID</th>
-                <th>HOSPITAL</th>
-                <th>PATIENT ID</th>
-                <th>ACTIVITY</th>
-                <th>MEDICAL SPECIALIST ID</th>
-                <th>STATUS</th>
-                <th>DATE</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>0001</td>
-                <td>20345683</td>
-                <td>KPJ</td>
-                <td>10000</td>
-                <td>CONSULTATION</td>
-                <td>30000</td>
-                <td>COMPLETED</td>
-                <td>17/11/2024</td>
-            </tr>
-            <tr>
-                <td>0002</td>
-                <td>20346584</td>
-                <td>KPJ</td>
-                <td>11000</td>
-                <td>SCAN</td>
-                <td>30001</td>
-                <td>PENDING</td>
-                <td>17/11/2024</td>
-            </tr>
-            <tr>
-                <td>0003</td>
-                <td>20445789</td>
-                <td>SJMC</td>
-                <td>12000</td>
-                <td>REPORT</td>
-                <td>30002</td>
-                <td>PENDING</td>
-                <td>17/11/2024</td>
-            </tr>
-            <tr>
-                <td>0004</td>
-                <td>20817346</td>
-                <td>SJMC</td>
-                <td>13000</td>
-                <td>SCAN</td>
-                <td>30003</td>
-                <td>PENDING</td>
-                <td>16/11/2024</td>
-            </tr>
-            <tr>
-                <td>0005</td>
-                <td>20297354</td>
-                <td>SJMC</td>
-                <td>14000</td>
-                <td>CONSULTATION</td>
-                <td>30004</td>
-                <td>COMPLETED</td>
-                <td>16/11/2024</td>
-            </tr>
-        </tbody>
-    </table>
-</body>
-</html>
+  <table class="table table-striped table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Patient Name</th>       {{-- ← new column --}}
+        <th>Hospital Name</th>
+        <th>Hospital Code</th>
+        <th>Patient IC</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Date Joined</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @forelse($patients as $patient)
+        <tr>
+          <td>{{ $patient->id }}</td>
+          <td>{{ $patient->name }}</td> {{-- ← show patient name --}}
+          <td>{{ optional($patient->hospital)->name ?? '—' }}</td>
+          <td>{{ $patient->hospital_code }}</td>
+          <td>{{ $patient->ic }}</td>
+          <td>{{ strtoupper($patient->role) }}</td>
+          <td>{{ $patient->created_at->format('d/m/Y') }}</td>
+          <td>{{ $patient->status ?? '—' }}</td>
+          <td>
+            <a href="{{ route('admin.patients.edit', $patient->id) }}"
+              class="btn btn-sm btn-outline-primary ms-2">
+                Edit
+            </a>
+          </td>
+        </tr>
+      @empty
+        <tr>
+          <td colspan="8" class="text-center">No patients found.</td>
+        </tr>
+      @endforelse
+    </tbody>
+  </table>
+  <!-- Add User Button -->
+  <div class="row mt-3">
+    <div class="col text-end">
+      <a href="{{ route('register.create') }}" class="btn btn-success">
+        <i class="fas fa-user-plus me-1"></i> Add User
+      </a>
+    </div>
+  </div>
+</div>
+@endsection

@@ -1,7 +1,6 @@
 @extends('layouts.radiologist')
 
 @section('main')
-<h3>WELCOME BACK</h3>
 <div class="container wide-container">
   <div class="md-4">
     <h3>Patient Activity Table</h3>
@@ -29,8 +28,7 @@
             </a>
           </td>
           <td>{{ $patient->created_at->format('Y-m-d') }}</td>
-          <!-- Status is "Pending" if the scan has not been uploaded -->
-          <td>Pending</td>
+          <td>{{ ucfirst($patient->status ?? 'pending') }}</td>
         </tr>
         @endforeach
       </tbody>

@@ -28,7 +28,7 @@
       @foreach($patients as $patient)
         <tr style="cursor:pointer;" onclick="window.location='{{ route('patient.history', $patient->id) }}'">
           <td>{{ $patient->name }}</td>
-          <td>{{ $patient->hospital_id }}</td>
+          <td>{{ $patient->id }}</td>
         </tr>
       @endforeach
     </tbody>
