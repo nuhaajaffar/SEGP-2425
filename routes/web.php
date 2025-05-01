@@ -65,6 +65,13 @@ Route::post('radiologist/patients/{patient}/complete', [
 Route::get('/patient/history/{id}', [PatientHistoryController::class, 'show'])
      ->name('patient.history');
 
+
+Route::get('/doctor/profile', function () {
+     $id   = session('hospital_user');
+     $user = HospitalUser::findOrFail($id);
+     return view('doctor.profile', compact('user'));
+})->name('doctor.profile');
+      
 //DOCTOR
 Route::prefix('doctor')
      ->name('doctor.')
@@ -103,6 +110,8 @@ Route::prefix('doctor')
     Route::post('consultation', [ConsultationController::class,'store'])
          ->name('consultation.store');
 });
+
+
 
 
 Route::get('/loading', function () {
@@ -286,6 +295,96 @@ Route::prefix('admin')
           return view('admin.privacy');
      })->name('privacy');
 });
+
+//RADIOGRAPHER
+Route::get('/radiographer/profile', function () {
+     $id   = session('hospital_user');
+     $user = HospitalUser::findOrFail($id);
+     return view('radiographer.profile', compact('user'));
+ })->name('radiographer.profile');
+ 
+Route::prefix('radiographer')
+     ->name('radiographer.')
+     ->group(function() {
+          Route::put('/radiographer/patients/{patient}', [AdminController::class, 'updatePatient'])
+          ->name('radiographer.update');
+          
+      Route::get('support', function () {
+           return view('radiographer.support');
+      })->name('support');
+   
+      Route::post('support', [RadiographerActivityController::class, 'submitSupport'])
+           ->name('support.submit');
+   
+     // SETTINGS
+     Route::get('settings', [RadiographerActivityController::class, 'editProfile'])
+          ->name('settings');
+ 
+     Route::post('settings', [RadiographerActivityController::class, 'updateProfile'])
+          ->name('settings.update');
+   
+      // — PRIVACY —
+      Route::get('privacy', function () {
+           return view('radiographer.privacy');
+      })->name('privacy');  
+      
+      Route::get('history/{id}', [RadiographerActivityController::class, 'show'])
+      ->name('history');
+ 
+});
+
+
+
+//RADIOLOGIST
+Route::get('/radiologist/profile', function () {
+     $id   = session('hospital_user');
+     $user = HospitalUser::findOrFail($id);
+     return view('radiologist.profile', compact('user'));
+ })->name('radiologist.profile');
+ 
+Route::prefix('radiologist')
+     ->name('radiologist.')
+     ->group(function() {
+          Route::put('/radiologist/patients/{patient}', [AdminController::class, 'updatePatient'])
+          ->name('radiologist.update');
+          
+      Route::get('support', function () {
+           return view('radiologist.support');
+      })->name('support');
+   
+      Route::post('support', [RadiologistDashboardController::class, 'submitSupport'])
+           ->name('support.submit');
+   
+     // SETTINGS
+     Route::get('settings', [RadiologistDashboardController::class, 'editProfile'])
+          ->name('settings');
+ 
+     Route::post('settings', [RadiologistDashboardController::class, 'updateProfile'])
+          ->name('settings.update');
+   
+      // — PRIVACY —
+      Route::get('privacy', function () {
+           return view('radiologist.privacy');
+      })->name('privacy');  
+      
+      Route::get('patient', [RadiologistDashboardController::class, 'search'])
+      ->name('patient.search');
+      
+      Route::get('history/{id}', [RadiologistDashboardController::class, 'show'])
+      ->name('history');
+
+      Route::get('notifications', [RadiologistDashboardController::class,'notifications'])
+      ->name('notifications.index');
+      
+    // Show the report‐upload form
+    Route::get('patient/{patient}/report', [PatientController::class, 'uploadReportForm'])
+         ->name('report.form');
+
+    // Handle the report‐upload POST
+    Route::post('patient/{patient}/report', [PatientController::class, 'uploadReportStore'])
+         ->name('report.store');
+});
+
 
 // Apply the custom middleware to all dashboard routes
 

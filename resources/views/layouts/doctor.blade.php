@@ -21,7 +21,7 @@
     <div class="slide">
       <h1>PIXELENCE</h1>
       <ul>
-      <li><a href="{{ route('profile.show', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
+      <li><a href="{{ route('doctor.profile', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
         
       <li><a href="{{ route('doctor.support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
       <li><a href="{{ route('doctor.settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
