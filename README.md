@@ -4,7 +4,7 @@ The codes investigate portfolio optimisation across five major technology equiti
 
 ## Installation
 
-To get started with the **Reinforcement Learning Portfolio Management System**, follow these steps:
+To get started with the **Portfolio Optimisation Algorithms**, follow these steps:
 
 ### Prerequisites
 
@@ -49,5 +49,5 @@ To get started with the **Reinforcement Learning Portfolio Management System**, 
  - Cumulative Portfolio Value Plot – A visualization showing the performance of the RL portfolio over time.
 
 # Conclusion:
- Thank you for using the Reinforcement Learning Portfolio Management System!
+ Thank you for using the Portfolio Optimisation Algorithms!
  We hope it provides valuable insights into portfolio optimization and enhances your understanding of reinforcement learning applied to financial markets.
