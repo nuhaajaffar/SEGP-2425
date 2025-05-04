@@ -85,4 +85,9 @@ class HospitalUser extends Model
             ? asset('storage/' . $this->profile_photo)
             : asset('images/default-avatar.png');
     }
+    
+    public function appointments()
+    {
+        return $this->hasMany(\App\Models\Appointment::class, 'hospital_user_id');
+    }
 }

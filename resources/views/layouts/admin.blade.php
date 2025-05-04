@@ -21,12 +21,13 @@
     <div class="slide">
       <h1>PIXELENCE</h1>
       <ul>
-        <li><a href="{{ route('admin.profile') }}"><i class="fas fa-user"></i> PROFILE</a></li>
+        <li><a href="{{ route('admin.profile', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
         <li><a href="{{ route('hospital.manage') }}"><i class="fas fa-hospital"></i> MANAGE HOSPITAL</a></li>
         <li><a href="{{ route('admin.user.logs') }}"><i class="fas fa-layer-group"></i> USER LOGS</a></li>
-        <li><a href="{{ route('support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
-        <li><a href="{{ route('settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
-        <li><a href="{{ route('privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+        <li><a href="{{ route('admin.support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
+        <li><a href="{{ route('admin.settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
+        <li><a href="{{ route('admin.privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+      
       </ul>
     </div>
   </div>

@@ -21,13 +21,13 @@
     <div class="slide">
       <h1>PIXELENCE</h1>
       <ul>
-        <li><a href="{{ route('profile.show', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
-        <li><a href="{{ route('hospital.manage') }}"><i class="fas fa-hospital"></i> MANAGE HOSPITAL</a></li>
-        <li><a href="{{ route('radiographer.user.logs') }}"><i class="fas fa-layer-group"></i> USER LOGS</a></li>
+        <li><a href="{{ route('management.profile', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
+        <li><a href="{{ route('management.manage-hospital') }}"><i class="fas fa-hospital"></i> MANAGE HOSPITAL</a></li>
+        <li><a href="{{ route('management.user.logs') }}"><i class="fas fa-layer-group"></i> USER LOGS</a></li>
       
-        <li><a href="{{ route('support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
-        <li><a href="{{ route('settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
-        <li><a href="{{ route('privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+        <li><a href="{{ route('management.support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
+        <li><a href="{{ route('management.settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
+        <li><a href="{{ route('management.privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
       </ul>
     </div>
 
@@ -38,8 +38,8 @@
   <header>
     <h2 class="logo">PIXELENCE</h2>
     <nav class="navigation">
-      <a href="{{ route('admin.dashboard') }}">HOME</a>
-      <a href="{{ route('radiographer.patient.search') }}">PATIENT</a>
+      <a href="{{ route('management.manage-user') }}">HOME</a>
+      <a href="{{ route('management.patient.search') }}">PATIENT</a>
       <a href="#">NOTIFICATION</a>
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
     </nav>

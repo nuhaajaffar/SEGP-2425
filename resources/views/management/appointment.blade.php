@@ -1,4 +1,4 @@
-@extends('layouts.hospital')
+@extends('layouts.management')
 
 @section('main')
 <div class="wide-container mt-5">

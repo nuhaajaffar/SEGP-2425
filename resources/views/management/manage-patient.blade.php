@@ -1,4 +1,4 @@
-@extends('layouts.hospital')
+@extends('layouts.management')
 
 @section('main')
 <div class="container wide-container">
@@ -38,7 +38,7 @@
             <td>{{ $patient->created_at->format('d/m/Y') }}</td>
             <td>
               <a href="{{ route('management.patient.edit', $patient->id) }}" class="btn btn-primary btn-sm">Edit</a>
-              <a href="{{ route('management.appointment', $patient->id) }}" class="btn btn-secondary btn-sm">Appointment</a>
+              <a href="{{ route('management.appointment.create', $patient->id) }}" class="btn btn-secondary btn-sm">Appointment</a>
             </td>
           </tr>
         @endforeach

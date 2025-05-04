@@ -27,6 +27,8 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserLogController;
 use App\Models\HospitalUser; 
+use App\Http\Controllers\ConsultationController;
+
 
 // Fallback Home Route
 Route::get('/', function () {
@@ -64,12 +66,53 @@ Route::get('/patient/history/{id}', [PatientHistoryController::class, 'show'])
      ->name('patient.history');
 
 
-     Route::get('/doctor/review/{patient}', [DoctorDashboardController::class, 'review'])
-     ->name('doctor.review');
- 
- // Submit the review (POST)
- Route::post('/doctor/patient/{patient}/review', [DoctorDashboardController::class, 'storeReview'])
-     ->name('doctor.patient.review.store');
+Route::get('/doctor/profile', function () {
+     $id   = session('hospital_user');
+     $user = HospitalUser::findOrFail($id);
+     return view('doctor.profile', compact('user'));
+})->name('doctor.profile');
+      
+//DOCTOR
+Route::prefix('doctor')
+     ->name('doctor.')
+     ->group(function() {
+    // Show the review page
+    Route::get(
+        'patient/{patient}/review',
+        [DoctorDashboardController::class, 'review']
+    )->name('review');
+
+    // Handle the review form submission
+    Route::post(
+        'patient/{patient}/review',
+        [DoctorDashboardController::class, 'storeReview']
+    )->name('review.store');
+
+    // SUPPORT / SETTINGS / PRIVACY
+    Route::get('support',   [DoctorDashboardController::class, 'supportForm'])
+         ->name('support');
+    Route::post('support',  [DoctorDashboardController::class, 'submitSupport'])
+         ->name('support.submit');
+
+    Route::get('settings',  [DoctorDashboardController::class, 'editProfile'])
+         ->name('settings');
+    Route::post('settings', [DoctorDashboardController::class, 'updateProfile'])
+         ->name('settings.update');
+
+    Route::get('privacy', function () {
+        return view('doctor.privacy');
+    })->name('privacy');
+
+    Route::get('consultation', [ConsultationController::class,'create'])
+         ->name('consultation.create');
+
+    // POST  /doctor/consultation
+    Route::post('consultation', [ConsultationController::class,'store'])
+         ->name('consultation.store');
+});
+
+
+
 
 Route::get('/loading', function () {
      return view('loading');
@@ -132,44 +175,80 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])
 Route::post('/login', [LoginController::class, 'login'])
      ->name('login.process');
 
+Route::get('/management/profile', function () {
+     $id   = session('hospital_user');
+     $user = HospitalUser::findOrFail($id);
+     return view('management.profile', compact('user'));
+})->name('management.profile');
+      
+// ========== MANAGEMENT AREA ==========
+Route::prefix('management')
+     ->name('management.')
+     ->group(function() {
 
 
-// Appointment booking page (for doctor booking)
-Route::get('/management/appointment/{patient}', [AppointmentController::class, 'create'])
-->name('management.appointment');
+    Route::get('dashboard', [ManagementController::class, 'dashboard'])
+         ->name('dashboard');
 
-Route::post('/management/appointment/{patient}', [AppointmentController::class, 'store'])
-->name('management.appointment.store');
+    // HOSPITAL / USER / PATIENT MANAGEMENT
+    Route::get('manage-hospital', [ManagementController::class, 'manageHospital'])
+         ->name('manage-hospital');
+    Route::get('manage-user',     [ManagementController::class, 'manageUser'])
+         ->name('manage-user');
+    Route::get('manage-patient',  [ManagementController::class, 'managePatient'])
+         ->name('manage-patient');
 
-Route::get('/management/manage-user', [ManagementController::class, 'manageUser'])
-     ->name('management.manage-user');
+     // User Logs listing
+    Route::get('user/logs', [ManagementController::class, 'userLogs'])
+         ->name('user.logs');
+    // EDIT SINGLE PATIENT
+    Route::get('patient/{patient}/edit',   [ManagementController::class, 'editPatient'])
+         ->name('patient.edit');
+    Route::put('patient/{patient}',        [ManagementController::class, 'updatePatient'])
+         ->name('patient.update');
 
-// Manage Patient page
-Route::get('/management/manage-patient', [ManagementController::class, 'managePatient'])
-     ->name('management.manage-patient');
+    // *** THIS IS THE ROUTE YOU NEED FOR “management.user.patients” ***
+    Route::get('user/{user}/patients',     [ManagementController::class, 'editUserPatients'])
+         ->name('user.patients');
+    Route::put('user/{user}/patients',     [ManagementController::class, 'updateUserPatients'])
+         ->name('user.patients.update');
 
+    // User Logs
+    Route::get('user/logs', [ManagementController::class, 'userLogs'])
+         ->name('user.logs');
 
-Route::get(
-    '/management/patient/{patient}/edit',
-    [ManagementController::class, 'editPatient']
-)->name('management.patient.edit');
+    // new: show edit form
+    Route::get('/management/patients/{patient}/edit', [AdminController::class, 'editPatient'])
+         ->name('patients.edit');
 
-Route::put(
-    '/management/patient/{patient}',
-    [ManagementController::class, 'updatePatient']
-)->name('management.patient.update');
+    // APPOINTMENTS
+    Route::get('appointment/{patient}',    [AppointmentController::class, 'create'])
+         ->name('appointment.create');
+    Route::post('appointment/{patient}',   [AppointmentController::class, 'store'])
+         ->name('appointment.store');
 
-// For managing a staff user’s list of patients:
-Route::get(
-    '/management/user/{user}/patients',
-    [ManagementController::class, 'editUserPatients']
-)->name('management.user.patients');
+    // SUPPORT / SETTINGS / PRIVACY
+    Route::get('support',   [ManagementController::class, 'supportForm'])
+         ->name('support');
+    Route::post('support',  [ManagementController::class, 'submitSupport'])
+         ->name('support.submit');
 
-Route::put(
-    '/management/user/{user}/patients',
-    [ManagementController::class, 'updateUserPatients']
-)->name('management.user.patients.update');
+    Route::get('settings',  [ManagementController::class, 'editProfile'])
+         ->name('settings');
+    Route::post('settings', [ManagementController::class, 'updateProfile'])
+         ->name('settings.update');
 
+    Route::get('privacy', function () {
+        return view('management.privacy');
+    })->name('privacy');
+
+    Route::get('patient', [ManagementController::class, 'index'])
+     ->name('patient.search');
+
+     Route::get('history/{id}', [ManagementController::class, 'show'])
+     ->name('history');
+
+});
 
 Route::get('/admin/profile', function () {
     $id   = session('hospital_user');
@@ -190,22 +269,124 @@ Route::prefix('admin')
          ->name('user.logs');
 
     // new: show edit form
-    Route::get('patients/{patient}/edit', [AdminController::class, 'editPatient'])
+    Route::get('/admin/patients/{patient}/edit', [AdminController::class, 'editPatient'])
          ->name('patients.edit');
 
     // new: handle update
-    Route::put('patients/{patient}', [AdminController::class, 'updatePatient'])
+    Route::put('/admin/patients/{patient}', [AdminController::class, 'updatePatient'])
          ->name('patients.update');
+         
+     Route::get('support', function () {
+          return view('admin.support');
+     })->name('support');
+  
+     Route::post('support', [AdminController::class, 'submitSupport'])
+          ->name('support.submit');
+  
+    // SETTINGS
+    Route::get('settings', [AdminController::class, 'editProfile'])
+         ->name('settings');
+
+    Route::post('settings', [AdminController::class, 'updateProfile'])
+         ->name('settings.update');
+  
+     // — PRIVACY —
+     Route::get('privacy', function () {
+          return view('admin.privacy');
+     })->name('privacy');
 });
 
+//RADIOGRAPHER
+Route::get('/radiographer/profile', function () {
+     $id   = session('hospital_user');
+     $user = HospitalUser::findOrFail($id);
+     return view('radiographer.profile', compact('user'));
+ })->name('radiographer.profile');
+ 
+Route::prefix('radiographer')
+     ->name('radiographer.')
+     ->group(function() {
+          Route::put('/radiographer/patients/{patient}', [AdminController::class, 'updatePatient'])
+          ->name('radiographer.update');
+          
+      Route::get('support', function () {
+           return view('radiographer.support');
+      })->name('support');
+   
+      Route::post('support', [RadiographerActivityController::class, 'submitSupport'])
+           ->name('support.submit');
+   
+     // SETTINGS
+     Route::get('settings', [RadiographerActivityController::class, 'editProfile'])
+          ->name('settings');
+ 
+     Route::post('settings', [RadiographerActivityController::class, 'updateProfile'])
+          ->name('settings.update');
+   
+      // — PRIVACY —
+      Route::get('privacy', function () {
+           return view('radiographer.privacy');
+      })->name('privacy');  
+      
+      Route::get('history/{id}', [RadiographerActivityController::class, 'show'])
+      ->name('history');
+ 
+});
+
+
+
+//RADIOLOGIST
+Route::get('/radiologist/profile', function () {
+     $id   = session('hospital_user');
+     $user = HospitalUser::findOrFail($id);
+     return view('radiologist.profile', compact('user'));
+ })->name('radiologist.profile');
+ 
+Route::prefix('radiologist')
+     ->name('radiologist.')
+     ->group(function() {
+          Route::put('/radiologist/patients/{patient}', [AdminController::class, 'updatePatient'])
+          ->name('radiologist.update');
+          
+      Route::get('support', function () {
+           return view('radiologist.support');
+      })->name('support');
+   
+      Route::post('support', [RadiologistDashboardController::class, 'submitSupport'])
+           ->name('support.submit');
+   
+     // SETTINGS
+     Route::get('settings', [RadiologistDashboardController::class, 'editProfile'])
+          ->name('settings');
+ 
+     Route::post('settings', [RadiologistDashboardController::class, 'updateProfile'])
+          ->name('settings.update');
+   
+      // — PRIVACY —
+      Route::get('privacy', function () {
+           return view('radiologist.privacy');
+      })->name('privacy');  
+      
+      Route::get('patient', [RadiologistDashboardController::class, 'search'])
+      ->name('patient.search');
+      
+      Route::get('history/{id}', [RadiologistDashboardController::class, 'show'])
+      ->name('history');
+
+      Route::get('notifications', [RadiologistDashboardController::class,'notifications'])
+      ->name('notifications.index');
+      
+    // Show the report‐upload form
+    Route::get('patient/{patient}/report', [PatientController::class, 'uploadReportForm'])
+         ->name('report.form');
+
+    // Handle the report‐upload POST
+    Route::post('patient/{patient}/report', [PatientController::class, 'uploadReportStore'])
+         ->name('report.store');
+});
+
+
 // Apply the custom middleware to all dashboard routes
-
-Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-->name('admin.dashboard');
-
-Route::get('/management/dashboard', function () {
-     return view('management.dashboard');
-})->name('management.dashboard');
 
 Route::get('/radiographer/dashboard', [RadiographerActivityController::class, 'index'])
 ->name('radiographer.dashboard');
@@ -272,9 +453,6 @@ Route::get('/user/logs', function(){
     return view('user.logs'); // create a view if needed
 })->name('user.logs');
 
-// Language switcher route
-Route::get('/lang/{lang}', [LanguageController::class, 'switch'])
-     ->name('lang.switch');
 
 // Support, Settings, Privacy routes (as examples)
 Route::get('/support', function () {

@@ -10,7 +10,8 @@ use App\Models\PatientReport;
 use App\Jobs\ProcessMRIImage;
 use App\Notifications\ReportCompleted;
 use Illuminate\Support\Facades\Log;
-
+use App\Notifications\ScanUploaded;
+use Illuminate\Support\Facades\Notification;
 
 class PatientController extends Controller
 {
@@ -42,28 +43,35 @@ class PatientController extends Controller
      */
     public function uploadScanStore(Request $request, $patientId)
     {
+        // 1) Validate the upload
         $request->validate([
             'scan' => 'required|mimes:jpg,png,pdf|max:2048',
         ]);
-        
-        $patient = HospitalUser::where('role', 'patient')->findOrFail($patientId);
-        $file = $request->file('scan');
-        $filename = $file->getClientOriginalName();
-        
-        // Save the file in the "scans" folder on the public disk
-        $path = $file->storeAs('scans', $filename, 'public');
-        
-        // Create a record in the patient_images table
-        \App\Models\PatientImage::create([
+
+        // 2) Retrieve the patient model
+        $patient = HospitalUser::where('role','patient')->findOrFail($patientId);
+
+        // 3) Save the file to disk
+        $path = $request->file('scan')->storeAs('scans', $request->file('scan')->getClientOriginalName(), 'public');
+
+        // 4) Create the DB record
+        PatientImage::create([
             'hospital_user_id' => $patient->id,
             'image_path'       => $path,
         ]);
-        
-        // Dispatch the job to process the scan (convert the storage path to a full system path)
-        \App\Jobs\ProcessMRIImage::dispatch($patient->id, storage_path('app/public/' . $path));
-        
-        return redirect()->route('radiographer.dashboard')
-                         ->with('success', 'Scan uploaded successfully for patient: ' . $patient->name);
+
+        $radiographer = HospitalUser::findOrFail(session('hospital_user'));
+        $admins        = HospitalUser::where('role','admin')->get();
+
+        Notification::send(
+            $admins,
+            new ScanUploaded($radiographer, $patient)
+        );
+
+        // 5) Redirect back with a success message
+        return redirect()
+            ->route('radiographer.dashboard')
+            ->with('success', 'Scan uploaded & admins have been notified.');
     }
     
     /**
@@ -92,23 +100,37 @@ class PatientController extends Controller
         $request->validate([
             'report' => 'required|mimes:pdf|max:2048',
         ]);
-        
-        $patient = HospitalUser::where('role', 'patient')->findOrFail($patientId);
-        $file = $request->file('report');
-        $filename = $file->getClientOriginalName();
-        // Save the file in the "reports" folder on the public disk
+    
+        $patient = HospitalUser::where('role','patient')->findOrFail($patientId);
+        $file    = $request->file('report');
+        $filename= $file->getClientOriginalName();
+    
+        // 1) Store the PDF
         $path = $file->storeAs('reports', $filename, 'public');
-        
-        // Create a record in the patient_reports table
+    
+        // 2) Insert into patient_reports
         PatientReport::create([
             'hospital_user_id' => $patient->id,
-            'image_path'       => $this->imagePath,
-            'report_path'      => $reportPathForDB,
+            'report_path'      => $path,
         ]);
-        
-        return redirect()->route('radiologist.dashboard')
-                         ->with('success', 'Report uploaded successfully for patient: ' . $patient->name);
+    
+        // 3) Dispatch the “report complete” notification
+        $radiologist = HospitalUser::findOrFail(session('hospital_user'));
+        $admins      = HospitalUser::where('role','hospital admin')->get();
+    
+        // Notify all hospital admins
+        Notification::send($admins, new ReportCompleted($radiologist, $patient));
+    
+        // Notify assigned doctor if there is one
+        if ($doctor = $patient->assignedDoctor) {
+            $doctor->notify(new ReportCompleted($radiologist, $patient));
+        }
+    
+        return redirect()
+               ->route('radiologist.dashboard')
+               ->with('success','Report uploaded and notifications sent.');
     }
+    
     
     /**
      * Display patient details along with any linked scan and report.

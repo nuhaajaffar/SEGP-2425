@@ -22,10 +22,11 @@
     <div class="slide">
       <h1>PIXELENCE</h1>
       <ul>
-      <li><a href="{{ route('profile.show', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li> 
-        <li><a href="{{ route('support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
-        <li><a href="{{ route('settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
-        <li><a href="{{ route('privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+      <li><a href="{{ route('radiologist.profile', session('hospital_user')) }}"><i class="fas fa-user"></i> PROFILE</a></li>
+        <li><a href="{{ route('radiologist.support') }}"><i class="fas fa-tv"></i> SUPPORT</a></li>
+        <li><a href="{{ route('radiologist.settings') }}"><i class="fas fa-cogs"></i> SETTING</a></li>
+        <li><a href="{{ route('radiologist.privacy') }}"><i class="fas fa-shield"></i> PRIVACY &amp; SECURITY</a></li>
+      
       </ul>
     </div>
   </div>
@@ -35,9 +36,8 @@
     <h2 class="logo">PIXELENCE</h2>
     <nav class="navigation">
       <a href="{{ route('radiologist.dashboard') }}">HOME</a>
-      <a href="{{ route('radiographer.patient.search') }}">PATIENTS</a>
-      <a href="#">NOTIFICATIONS</a> 
-      <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
+      <a href="{{ route('radiologist.patient.search') }}">PATIENTS</a>
+      <a href="{{ route('radiologist.notifications.index') }}">NOTIFICATIONS</a>       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">LOGOUT</a>
     </nav>
     <!-- Hidden logout form -->
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
